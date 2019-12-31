@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudinte.zhaosheng.modules.chat.dao.ChatCustomDao">
+    
+	<sql id="chatCustomColumns">
+		a.id AS "id",
+		a.priority AS "priority",
+		a.del_flag AS "delFlag",
+		a.user_id AS "user.id",
+		u2.name AS "user.name"
+	</sql>
+	
+	<sql id="chatCustomJoins">
+		LEFT JOIN sys_user u2 ON u2.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="ChatCustom">
+		SELECT 
+			<include refid="chatCustomColumns"/>
+		FROM chat_custom a
+		<include refid="chatCustomJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<sql id="find_chatCustom_where">
+		<if test=" delFlag != null and delFlag != '' ">
+			a.del_flag = #{delFlag}
+		</if>
+	</sql>
+	
+	<select id="findCount" resultType="long">
+		SELECT COUNT(*)
+		FROM chat_custom a
+		<include refid="chatCustomJoins"/>
+		<where>
+			<include refid="find_chatCustom_where"/>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="ChatCustom">
+		SELECT 
+			<include refid="chatCustomColumns"/>
+		FROM chat_custom a
+		<include refid="chatCustomJoins"/>
+		<where>
+			<include refid="find_chatCustom_where"/>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.priority ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ChatCustom">
+		SELECT 
+			<include refid="chatCustomColumns"/>
+		FROM chat_custom a
+		<include refid="chatCustomJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO chat_custom(
+			id,
+			priority,
+			del_flag,
+			user_id
+		) VALUES (
+			#{id},
+			#{priority},
+			#{delFlag},
+			#{user.id}
+		)
+	</insert>
+	
+	
+	  <insert id ="batchInsert" parameterType="java.util.List">
+		INSERT INTO chat_custom(
+			id,
+			priority,
+			del_flag,
+			user_id
+		) 
+		   <foreach collection="list" item="item" index="index" separator =",">
+       
+		VALUES (
+			#{item.id},
+			#{item.priority},
+			#{item.delFlag},
+			#{item.user.id}
+		)
+		</foreach>
+	</insert>
+	
+	<insert id ="batchInsertUpdate" parameterType="java.util.List">
+		INSERT INTO chat_custom(
+			id,
+			priority,
+			del_flag,
+			user_id
+		)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator =",">
+        (
+			#{item.id},
+			#{item.priority},
+			#{item.delFlag},
+			#{item.user.id}
+		)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+			priority = values(priority),
+			del_flag = values(del_flag),
+			user_id = values(user_id)
+		
+	</insert>
+	
+ 	<update id ="batchUpdate" parameterType="java.util.List" >
+      <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+		UPDATE chat_custom SET 	
+			priority = #{item.priority},
+			del_flag = #{item.delFlag},
+			user_id = #{item.user.id}
+		WHERE id = #{id}
+		</foreach>
+	</update>
+	
+	<update id="update">
+		UPDATE chat_custom SET 	
+			priority = #{priority},
+			del_flag = #{delFlag},
+       		user_id = #{user.id}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 禁用 -->
+	<update id="disable">
+		UPDATE chat_custom SET 	
+			del_flag = #{delFlag}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete">
+		DELETE FROM chat_custom WHERE id = #{id}
+	</delete>
+	
+	<!-- 批量删除 ,参数为String类型id数组，如   String[] ids ，url: ids=1&ids=2&ids=3 或 ids=1,2,3 -->
+	<delete id="deleteByIds1" parameterType="String">
+		DELETE FROM chat_custom WHERE id IN
+		<foreach collection="array" item="item" open=" (" close=") " separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	<delete id="deleteByIds" parameterType="ChatCustom">
+		DELETE FROM chat_custom WHERE id IN
+		<foreach collection="ids" item="id" open=" (" close=") " separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+</mapper>

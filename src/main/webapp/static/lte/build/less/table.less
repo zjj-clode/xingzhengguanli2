@@ -1,0 +1,133 @@
+/*
+ * Component: Table
+ * ----------------
+ */
+table{
+  font-size: 13px!important;
+}
+.table {
+  //Cells
+  > thead,
+  > tbody,
+  > tfoot {
+    > tr {
+      > th,
+      > td {
+        border-top: 1px solid #f4f4f4;
+      }
+    }
+  }
+  //thead cells
+  > thead > tr > th {
+    border-bottom: none!important;
+  }
+  //progress bars in tables
+  tr td .progress {
+    margin-top: 5px;
+  }
+}
+
+.table-bgodd{
+  >tbody > tr:nth-child(odd){
+    >td{
+      background: @light-gray;
+    }
+  }
+}
+
+//Bordered Table
+.table-bordered {
+  border: 1px solid @box-border-color;
+  > thead,
+  > tbody,
+  > tfoot {
+    > tr {
+      > th,
+      > td {
+        border: 1px solid @box-border-color;
+      }
+    }
+  }
+  > thead > tr {
+    > th,
+    > td {
+      border-bottom-width: 2px;
+    }
+  }
+}
+
+.table.no-border {
+  &,
+  td,
+  th {
+    border: 0;
+  }
+}
+
+/* .text-center in tables */
+table.text-center {
+  &, td, th {
+    text-align: center;
+  }
+}
+
+.table.align {
+  th {
+    text-align: left;
+  }
+  td {
+    text-align: right;
+  }
+}
+
+/* aliTable style */
+.aliTable{
+  border:1px solid #e1e6eb;
+  th{
+    border-bottom:1px solid #e1e6eb;
+    background: #f5f6fa;
+    padding:10px;
+    font-weight: normal;
+    color:#999;
+  }
+  td{
+    border-bottom:1px solid #e1e6eb;
+    background: #fff;
+    padding:15px 10px;
+  }
+  tr:nth-child(even){
+    td{
+      background: #f9f9fa;
+    }
+  }
+}
+
+/*  */
+.boxTable{
+  background: #fff;
+  .boxHeader{
+    height: 38px;
+    line-height: 38px;
+    color:#fff;
+    background: @normal-blue;
+    padding:0 15px;
+  }
+  .boxCont{
+    padding:15px;
+    table{
+      th{
+        padding:5px 10px;
+        font-weight: normal;
+        color:#999;
+      }
+      td{
+        padding: 10px;
+      }
+      tr:nth-child(odd){
+        td{
+          background: #f5f7f9;
+        }
+      }
+    }
+  }
+}

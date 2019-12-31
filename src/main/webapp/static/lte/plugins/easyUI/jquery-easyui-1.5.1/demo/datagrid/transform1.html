@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Transform DataGrid from Table - jQuery EasyUI Demo</title>
+	<link rel="stylesheet" type="text/css" href="../../themes/bootstrap/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../../themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="../demo.css">
+	<script type="text/javascript" src="../../jquery.min.js"></script>
+	<script type="text/javascript" src="../../jquery.easyui.min.js"></script>
+	<script language="javascript">
+
+
+x=0;
+
+	 function resetcol()
+	 {
+	  var pagewidth=document.body.clientWidth;
+
+	    
+			
+	  $("span").text(pagewidth);
+	  var dgwidth=pagewidth*0.9;
+	  $('#dg').datagrid('resize', {
+                width: dgwidth
+            });
+			
+			
+	  col = $('#dg').datagrid('getColumnOption', 'itemid');
+      col.width = dgwidth*0.2;
+	  $("span").text(pagewidth*0.2+":"+col);
+      col.align = 'center';
+	  col = $('#dg').datagrid('getColumnOption', 'productid');
+      col.width = dgwidth*0.2;
+      col.align = 'center';
+	   col = $('#dg').datagrid('getColumnOption', 'listprice');
+      col.width = dgwidth*0.3;
+      col.align = 'center';
+	   col = $('#dg').datagrid('getColumnOption', 'unitcost');
+      col.width = dgwidth*0.4;
+      col.align = 'center';
+    $('#dg').datagrid();
+	  
+	  }
+
+$(document).ready(function(){
+$(window).resize(function() {
+  $("span").text(x+=1);
+  resetcol();
+});
+});
+	</script>
+</head>
+<body>
+	<h2>Transform DataGrid from Table</h2>
+	<p>Transform DataGrid from an existing, unformatted html table.</p>
+	
+	<table id="dg" class="easyui-datagrid"  style="height:250px">
+		<thead data-options="frozen:true">
+			<tr>
+				<th data-options="field:'itemid',width:100">Item ID</th>
+				<th data-options="field:'productid',width:120">Product</th>
+			</tr>
+		</thead>
+		<thead>
+			<tr>
+				<th data-options="field:'listprice',width:90,align:'right'">List Price</th>
+				<th data-options="field:'unitcost',width:90,align:'right'">Unit Cost</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td style="font-weight:bold;">EST-1</td><td>FI-SW-01</td><td>1</td><td>3</td>
+			</tr>
+			<tr>
+				<td>EST-10</td><td>K9-DL-01</td><td>2</td><td>4</td>
+			</tr>
+			
+		</tbody>
+	</table>
+	<script language="javascript">
+	$('#dg').datagrid();
+	resetcol();
+
+
+
+	
+	</script>
+	
+	<p>窗口大小被调整过 <span>0</span> 次。</p>
+<p>请试着重新调整浏览器窗口的大小。</p>
+</body>
+</html>

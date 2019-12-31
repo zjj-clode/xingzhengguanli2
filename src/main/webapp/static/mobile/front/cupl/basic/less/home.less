@@ -1,0 +1,132 @@
+@import "fun.less";
+
+/**图标定义*/
+.icon_wx{
+	height:1rem;
+	width:auto!important;
+	margin-left:-.2rem;
+}
+.icon_tw{
+	height:1rem;
+	width:auto!important;
+	margin-left:-.2rem;
+}
+
+/**btn 定义*/
+.btn-zx,.btn-tw{
+	width:4rem;
+	height:1.078rem;
+	background-color:@themeColor;
+	margin:0 .235rem;
+	.f(@fs-big,#fff);
+	.f-state;
+	line-height:1.078rem;
+	.border-radius(.2rem);
+	.box-shadow(@gray3,0px,2px,5px);
+}
+.btn-tw{
+	background-color:@subColor;
+}
+.home{
+	.sec-two{
+		margin-top:-.539rem
+	}
+	.sec-thr{
+		.padd-t;
+		margin-top:.88rem;
+	}
+	.sec-for{
+		margin-top:1.05rem;
+	}
+}
+
+.sub-menu-h{
+	a{
+		.f(@fs-base,@themeColor);
+		.f-state;
+		display:block;
+		img{
+			width:66%;
+		}
+		span{
+			display:inline-block;
+			.width;
+		}
+	}
+}
+
+.sub-wd-list{
+	.width;
+	.box;
+	.padd-t(.05rem);
+	.icon_id{
+		width:.45rem;
+	}
+	.icon_qz{
+		width:.5rem;
+	}
+	.icon_lm{
+		width:.4rem;
+		margin-top:-.05rem;
+	}
+	.icon_time{
+		margin-top:-.05rem;
+		margin-right:.1rem;
+		width:.45rem;
+	}
+	.ico_arrow_right{
+		width:.35rem;
+		margin-left:.1rem;
+	}
+	.see_more{
+		.f(@fs-small,@gray2);
+		display:inline-block;
+		text-decoration:underline;
+	}
+	li{
+		.border-radius(.5rem);
+		.box-shadow(lighten(@gray3,27%),1px,1px,9px);
+		.width;
+		margin-bottom:.56rem;
+		
+		.header{
+			.padd-t();
+			.line;
+			justify-content: flex-start;
+			line-height:1.06rem;
+			span{
+				.toh;
+			}
+			span:last-child{
+				margin-left:.5rem;
+			}
+		}
+		.con{
+			padding-bottom:.3125rem;
+		}
+		.quest,.answer{
+			.grid(70 528,598);
+			.padd-t();
+			margin-top:.3125rem;
+			.sub_con{
+				padding-left:.2rem;
+			}
+		}
+		.ico{
+			align-self:flex-start;
+			img{
+				width:88%;
+				margin-top:.1rem;
+			}
+		}
+		.uInfo{
+			.f(@fs-small,@gray2);
+			.padd-t();
+			margin-top:.3125rem;
+			justify-content: flex-end;
+			span:first-child{
+				margin-right:.5rem;
+			}
+		}
+	}
+}

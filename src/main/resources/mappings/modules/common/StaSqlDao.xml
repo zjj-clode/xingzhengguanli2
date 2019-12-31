@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudinte.zhaosheng.modules.common.dao.StaSqlDao">
+    
+	<sql id="staSqlColumns">
+		a.id AS "id",
+		a.staname AS "staname",
+		a.stasql AS "stasql",
+		a.headinf AS "headinf",
+		a.headlevel AS "headlevel",
+		a.statype AS "statype",
+		a.colinf AS "colinf",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.sort AS "sort",
+		a.mercol AS "mercol",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="staSqlJoins">
+	</sql>
+    
+	<select id="get" resultType="StaSql">
+		SELECT 
+			<include refid="staSqlColumns"/>
+		FROM sta_sql a
+		<include refid="staSqlJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<sql id="find_staSql_where">
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="staname != null and staname != ''">
+			AND a.staname = #{staname}
+		</if>
+		<if test="statype != null and statype != ''">
+			AND a.statype = #{statype}
+		</if>
+	</sql>
+	
+	<select id="findCount" resultType="long">
+		SELECT COUNT(*)
+		FROM sta_sql a
+		<include refid="staSqlJoins"/>
+		<where>
+			<include refid="find_staSql_where"/>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="StaSql">
+		SELECT 
+			<include refid="staSqlColumns"/>
+		FROM sta_sql a
+		<include refid="staSqlJoins"/>
+		<where>
+			<include refid="find_staSql_where"/>
+		</where>
+		<choose>
+			<when test="page != null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.sort
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="StaSql">
+		SELECT 
+			<include refid="staSqlColumns"/>
+		FROM sta_sql a
+		<include refid="staSqlJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.sort
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sta_sql(
+			id,
+			staname,
+			stasql,
+			headinf,
+			colinf,
+			headlevel,
+			statype,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			sort,
+			mercol,
+			del_flag
+		) VALUES (
+			#{id},
+			#{staname},
+			#{stasql},
+			#{headinf},
+			#{colinf},
+			#{headlevel},
+			#{statype},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{sort},
+			#{mercol},
+			#{delFlag}
+		)
+	</insert>
+	
+	<insert id ="batchInsert" parameterType="java.util.List">
+		INSERT INTO sta_sql(
+			id,
+			staname,
+			stasql,
+			headinf,
+			statype,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			
+			del_flag
+		) VALUES
+		<foreach collection="list" item="item" index="index" separator =",">
+		(
+			#{item.id},
+			#{item.staname},
+			#{item.stasql},
+			#{item.headinf},
+			#{item.statype},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+	</insert>
+	
+	<insert id ="batchInsertUpdate" parameterType="java.util.List">
+		INSERT INTO sta_sql(
+			id,
+			staname,
+			stasql,
+			headinf,
+			statype,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		)VALUES 
+		<foreach collection="list" item="item" index="index" separator =",">
+        (
+			#{item.id},
+			#{item.staname},
+			#{item.stasql},
+			#{item.headinf},
+			#{item.statype},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+			staname = values(staname),
+			stasql = values(stasql),
+			headinf = values(headinf),
+			statype = values(statype),
+			update_by = values(update_by),
+			update_date = values(update_date),
+			remarks = values(remarks)
+	</insert>
+	
+ 	<update id ="batchUpdate" parameterType="java.util.List" >
+      	<foreach collection="list" item="item" index="index" open="" close="" separator=";">
+		UPDATE sta_sql SET 	
+			staname = #{item.staname},
+			stasql = #{item.stasql},
+			headinf = #{item.headinf},
+			statype = #{item.statype},
+			update_by = #{item.updateBy.id},
+			update_date = #{item.updateDate},
+			remarks = #{item.remarks}
+		WHERE id = #{id}
+		</foreach>
+	</update>
+	
+	<update id="update">
+		UPDATE sta_sql SET 	
+			staname = #{staname},
+			stasql = #{stasql},
+			headinf = #{headinf},
+			statype = #{statype},
+			colinf=#{colinf},
+			headlevel=#{headlevel},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			sort=#{sort},
+			mercol=#{mercol},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 必须保证至少有一个待更新字段不为null -->
+	<update id="updateSelective">
+		UPDATE sta_sql
+		<set>
+			<if test="staname != null">
+			staname = #{staname},
+			</if>
+			<if test="stasql != null">
+			stasql = #{stasql},
+			</if>
+			<if test="headinf != null">
+			headinf = #{headinf},
+			</if>
+			<if test="statype != null">
+			statype = #{statype},
+			</if>
+			<if test="updateBy.id != null">
+			update_by = #{updateBy.id},
+			</if>
+			<if test="updateDate != null">
+			update_date = #{updateDate},
+			</if>
+			<if test="remarks != null">
+			remarks = #{remarks},
+			</if>
+		</set>
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 禁用 -->
+	<update id="disable">
+		UPDATE sta_sql SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete">
+		DELETE FROM sta_sql WHERE id = #{id}
+	</delete>
+	
+	<!-- 批量删除  -->
+	<delete id="deleteByIds" parameterType="StaSql">
+		DELETE FROM sta_sql WHERE id IN
+		<foreach collection="ids" item="id" open=" (" close=") " separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<select id="commonSta" resultType="java.util.HashMap">
+		${stasql}
+	</select>
+	
+</mapper>

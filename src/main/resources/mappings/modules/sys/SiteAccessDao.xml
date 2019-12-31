@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.SiteAccessDao">
+
+	<sql id="siteAccessColumns">
+		a.id,
+
+		a.session_id AS "sessionId",
+		a.login_year AS "loginYear",
+		a.login_year_month AS "loginYearMonth",
+		a.login_year_month_day AS "loginYearMonthDay",
+		a.login_date_time AS "loginDateTime",
+		a.logout_date_time AS "logoutDateTime",
+
+		a.login_name AS "loginName",
+		a.name AS "name",
+		a.dep_id AS "depId",
+		a.dep_name AS "depName",
+
+		a.ip AS "ip",
+
+		a.country AS "country",
+		a.area AS "area",
+		a.region AS "region",
+		a.city AS "city",
+
+		a.plat_form AS "platform",
+
+		a.is_online AS "online",
+
+		a.remarks AS "remarks",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+
+	<sql id="siteAccessJoins">
+
+	</sql>
+
+	<select id="get" resultType="SiteAccess">
+		SELECT
+		<include refid="siteAccessColumns" />
+		FROM sys_site_access a
+		<include refid="siteAccessJoins" />
+		WHERE a.id = #{id}
+	</select>
+
+	<sql id="find_siteAccess_where">
+		<if test="delFlag != null and delFlag != ''">
+			a.del_flag = #{delFlag}
+		</if>
+		<if test="name != null and name != ''">
+			AND a.name LIKE 
+				<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+		</if>
+		<if test="loginName != null and loginName != ''">
+			AND a.login_name LIKE 
+				<if test="dbName == 'oracle'">'%'||#{loginName}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{loginName}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{loginName},'%')</if>
+		</if>
+		<if test="online != null and online != ''">
+			AND a.is_online = #{online}
+		</if>
+		<if test="loginDateTimeStart!=null and loginDateTimeStart!=''">
+			AND a.login_date_time &gt;= #{loginDateTimeStart}
+		</if>
+		<if test="loginDateTimeEnd!=null and loginDateTimeEnd!=''">
+			AND a.login_date_time &lt;= #{loginDateTimeEnd}
+		</if>
+	</sql>
+
+	<select id="findCount" resultType="long">
+		SELECT COUNT(*) FROM sys_site_access a
+		<include refid="siteAccessJoins" />
+		<where>
+			<include refid="find_siteAccess_where" />
+		</where>
+	</select>
+
+	<select id="findList" resultType="SiteAccess">
+		SELECT
+		<include refid="siteAccessColumns" />
+		FROM sys_site_access a
+		<include refid="siteAccessJoins" />
+		<where>
+			<include refid="find_siteAccess_where" />
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.login_date_time DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="SiteAccess">
+		SELECT
+		<include refid="siteAccessColumns" />
+		FROM sys_site_access a
+		<include refid="siteAccessJoins" />
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.login_date_time DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<!-- 某个月按天分组统计登录人次 -->
+	<select id="countMonthByDay" resultType="hashmap" parameterType="SiteAccess">
+		SELECT 
+		<if test="dbName == 'oracle'">
+			TO_CHAR(a.login_date_time,'yyyy-mm-dd') AS "login_date",
+		</if>
+		<if test="dbName == 'mysql'">
+			DATE_FORMAT(a.login_date_time,'%Y-%m-%d') AS "login_date",
+		</if>
+		COUNT(id) AS "login_count"
+		FROM sys_site_access a 
+		WHERE a.login_year_month = #{loginYearMonth}
+		GROUP BY
+		<if test="dbName == 'oracle'">
+			TO_CHAR(a.login_date_time,'yyyy-mm-dd')
+		</if>
+		<if test="dbName == 'mysql'">
+			login_date
+		</if>
+	</select>
+	
+	<!-- 某年按月分组统计登录人次 -->
+	<select id="countYearByMonth" resultType="hashmap" parameterType="SiteAccess">
+		SELECT 
+		a.login_year_month AS "login_month",
+		COUNT(id) AS "login_count"
+		FROM sys_site_access a 
+		WHERE a.login_year = #{loginYear} 
+		GROUP BY a.login_year_month
+	</select>
+	
+	<!-- 某段时间内登录次数按账号排序 -->
+	<select id="countByLoginname" resultType="hashmap" parameterType="SiteAccess">
+		SELECT 
+		a.login_name AS "login_name",
+		a.name AS "name",
+		COUNT(id) AS "login_count"
+		FROM sys_site_access a 
+		WHERE 1 = 1
+		<if test="loginDateTimeStart!=null and loginDateTimeStart!=''">
+			AND a.login_date_time &gt;= #{loginDateTimeStart}
+		</if>
+		<if test="loginDateTimeEnd!=null and loginDateTimeEnd!=''">
+			AND a.login_date_time &lt;= #{loginDateTimeEnd}
+		</if>
+		GROUP BY a.login_name,a.name
+		ORDER BY COUNT(id) DESC
+	</select>
+	
+	
+	<!-- 根据昨天时间统计之前30天的登录次数、人数 -->
+	<select id="countForHighcharts" resultType="hashmap">
+		SELECT 
+		a.login_year_month_day AS "login_year_month_day",
+		COUNT(1) AS "login_count",
+		count(distinct(a.login_name)) AS "login_name_count"
+		FROM sys_site_access a 
+		WHERE a.login_year_month_day &gt;= #{beginDay} 
+		and a.login_year_month_day &lt;= #{endDay} 
+		GROUP BY a.login_year_month_day
+		ORDER BY a.login_year_month_day DESC
+	</select>
+	
+	<!-- 根据昨天时间统计之前30天的学生登录次数、人数 -->
+	<select id="countForStudentHighcharts" resultType="hashmap">
+		SELECT 
+		a.login_year_month_day AS "login_year_month_day",
+		COUNT(1) AS "login_count",
+		count(distinct(a.login_name)) AS "login_name_count"
+		FROM sys_site_access a,sys_user b 
+		where a.login_name = b.login_name and b.user_type = '3' 
+		and a.login_year_month_day &gt;= #{beginDay} 
+		and a.login_year_month_day &lt;= #{endDay} 
+		GROUP BY a.login_year_month_day
+		ORDER BY a.login_year_month_day DESC
+	</select>
+	
+
+	<insert id="insert">
+		INSERT INTO sys_site_access(
+		id,
+
+		session_id,
+		login_year,
+		login_year_month,
+		login_year_month_day,
+		login_date_time,
+		logout_date_time,
+
+		login_name,
+		name,
+		dep_id,
+		dep_name,
+
+		ip,
+
+		country,
+		area,
+		region,
+		city,
+
+		plat_form,
+
+		is_online,
+
+
+		create_by,
+		create_date,
+		update_by,
+		update_date,
+		remarks,
+		del_flag
+		) VALUES (
+		#{id},
+
+		#{sessionId},
+		#{loginYear},
+		#{loginYearMonth},
+		#{loginYearMonthDay},
+		#{loginDateTime},
+		#{logoutDateTime},
+
+		#{loginName},
+		#{name},
+		#{depId},
+		#{depName},
+
+		#{ip},
+
+		#{country},
+		#{area},
+		#{region},
+		#{city},
+
+		#{platform},
+
+		#{online},
+
+		#{createBy.id},
+		#{createDate},
+		#{updateBy.id},
+		#{updateDate},
+		#{remarks},
+		#{delFlag}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE sys_site_access SET
+		session_id = #{sessionId},
+		login_year = #{loginYear},
+		login_year_month = #{loginYearMonth},
+		login_year_month_day = #{loginYearMonthDay},
+		login_date_time = #{loginDateTime},
+		logout_date_time = #{logoutDateTime},
+		login_name = #{loginName},
+		name = #{name},
+		dep_id = #{depId},
+		dep_name = #{depName},
+		ip = #{ip},
+		country = #{country},
+		area = #{area},
+		region = #{region},
+		city = #{city},
+		plat_form = #{platform},
+		is_online = #{online},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate},
+		remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+
+	<update id="logout">
+		UPDATE sys_site_access SET
+		logout_date_time = #{logoutDateTime},
+		is_online = '0'
+		WHERE session_id = #{sessionId}
+	</update>
+	
+	<update id="logoutAll">
+		UPDATE sys_site_access SET
+		logout_date_time = #{logoutDateTime},
+		is_online = '0'
+		WHERE is_online = '1'
+	</update>
+
+	<!-- 真删除 -->
+	<delete id="delete">
+		DELETE FROM sys_site_access
+		WHERE id = #{id}
+	</delete>
+
+	<select id="countSiteAccess" resultType="long">
+	
+		SELECT count(login_name) 
+		from sys_site_access 
+		WHERE 
+			login_year_month_day = DATE(NOW())
+			and del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+	
+	<select id="countViewSiteAccess" resultType="long">
+	
+		SELECT count(distinct login_name) 
+		from sys_site_access 
+		WHERE 
+			login_year_month_day = DATE(NOW())
+			and del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+</mapper>

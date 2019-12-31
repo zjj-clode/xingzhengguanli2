@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudinte.modules.xingzhengguanli.dao.WorkArrangementSettingDao">
+    
+	<sql id="workArrangementSettingColumns">
+		a.id AS "id",
+		a.department AS "department",
+		a.start_date AS "startDate",
+		a.end_date AS "endDate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.title AS "title"
+	</sql>
+	
+	<sql id="workArrangementSettingJoins">
+	</sql>
+    
+	<select id="get" resultType="WorkArrangementSetting">
+		SELECT 
+			<include refid="workArrangementSettingColumns"/>
+		FROM work_arrangement_setting a
+		<include refid="workArrangementSettingJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<sql id="find_workArrangementSetting_where">
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="department != null and department != ''">
+			AND a.department LIKE 
+				<if test="dbName == 'oracle'">'%'||#{department}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{department}+'%'</if>  
+				<if test="dbName == 'mysql'">concat('%',#{department},'%')</if>
+		</if>
+		<if test="startDate != null">
+			AND a.start_date = #{startDate}
+		</if>
+		<if test="endDate != null">
+			AND a.end_date = #{endDate}
+		</if>
+		<if test="title != null and title != ''">
+			AND a.title LIKE 
+				<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>  
+				<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+		</if>
+		<if test="createBy != null and createBy.id != null and createBy.id != ''">
+			AND a.create_by  = #{createBy.id}
+		</if>
+	</sql>
+	
+	<select id="findCount" resultType="long">
+		SELECT COUNT(*)
+		FROM work_arrangement_setting a
+		<include refid="workArrangementSettingJoins"/>
+		<where>
+			<include refid="find_workArrangementSetting_where"/>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="WorkArrangementSetting">
+		SELECT 
+			<include refid="workArrangementSettingColumns"/>
+		FROM work_arrangement_setting a
+		<include refid="workArrangementSettingJoins"/>
+		<where>
+			<include refid="find_workArrangementSetting_where"/>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WorkArrangementSetting">
+		SELECT 
+			<include refid="workArrangementSettingColumns"/>
+		FROM work_arrangement_setting a
+		<include refid="workArrangementSettingJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO work_arrangement_setting(
+			id,
+			department,
+			start_date,
+			end_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			title
+		) VALUES (
+			#{id},
+			#{department},
+			#{startDate},
+			#{endDate},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{title}
+		)
+	</insert>
+	
+	
+	  <insert id ="batchInsert" parameterType="java.util.List">
+		INSERT INTO work_arrangement_setting(
+			id,
+			department,
+			start_date,
+			end_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			title
+		) 
+		   <foreach collection="list" item="item" index="index" separator =",">
+       
+		VALUES (
+			#{item.id},
+			#{item.department},
+			#{item.startDate},
+			#{item.endDate},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag},
+			#{item.title}
+		)
+		</foreach>
+	</insert>
+	
+	<insert id ="batchInsertUpdate" parameterType="java.util.List">
+		INSERT INTO work_arrangement_setting(
+			id,
+			department,
+			start_date,
+			end_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			title
+		)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator =",">
+        (
+			#{item.id},
+			#{item.department},
+			#{item.startDate},
+			#{item.endDate},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag},
+			#{item.title}
+		)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+			department = values(department),
+			start_date = values(start_date),
+			end_date = values(end_date),
+			update_by = values(update_by),
+			update_date = values(update_date),
+			remarks = values(remarks),
+			title = values(title)
+		
+	</insert>
+	
+ <update id ="batchUpdate" parameterType="java.util.List" >
+      <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+		UPDATE work_arrangement_setting SET 	
+			department = #{item.department},
+			start_date = #{item.startDate},
+			end_date = #{item.endDate},
+			update_by = #{item.updateBy.id},
+			update_date = #{item.updateDate},
+			remarks = #{item.remarks},
+			title = #{item.title}
+		WHERE id = #{id}
+		</foreach>
+	</update>
+	
+	<update id="update">
+		UPDATE work_arrangement_setting SET 	
+       			department = #{department},
+			start_date = #{startDate},
+			end_date = #{endDate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			title = #{title}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 禁用 -->
+	<update id="disable">
+		UPDATE work_arrangement_setting SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete">
+		DELETE FROM work_arrangement_setting WHERE id = #{id}
+	</delete>
+	
+	<!-- 批量删除 ,参数为String类型id数组，如   String[] ids ，url: ids=1&ids=2&ids=3 或 ids=1,2,3 -->
+	<delete id="deleteByIds1" parameterType="String">
+		DELETE FROM work_arrangement_setting WHERE id IN
+		<foreach collection="array" item="item" open=" (" close=") " separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	
+	<delete id="deleteByIds" parameterType="WorkArrangementSetting">
+		DELETE FROM work_arrangement_setting WHERE id IN
+		<foreach collection="ids" item="id" open=" (" close=") " separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+</mapper>

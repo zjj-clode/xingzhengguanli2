@@ -1,0 +1,18 @@
+.editInn .no-content {
+    color : #999999;
+}
+.qItemShow .esq-answer {
+    border-radius: 3px;
+    box-shadow: none;
+    border: 1px solid #d2d6de;
+    padding: 6px 12px;
+    min-height: 60px;
+}
+.view-body {
+    background: #ddf4ff url(oldbg2-bg.jpg) repeat-x;
+}
+.view-body .content {
+    background: url(oldbg2.jpg) no-repeat top center;
+    padding-top: 105px;
+    margin: 0 auto;
+}

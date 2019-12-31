@@ -1,0 +1,57 @@
+/*
+ * Component: Label
+ * ----------------
+ */
+.label-default {
+  background-color: @gray!important;
+  color: #444;
+}
+
+.label-danger {
+  &:extend(.bg-red);
+  &:after{
+  	border-right-color:@red!important;
+  }
+}
+
+.label-info {
+  &:extend(.bg-aqua);
+  &:after{
+  	border-right-color:@aqua!important;
+  }
+}
+
+.label-warning {
+  &:extend(.bg-yellow);
+  &:after{
+  	border-right-color:@yellow!important;
+  }
+}
+
+.label-primary {
+  &:extend(.bg-light-blue);
+  &:after{
+  	border-right-color:@light-blue!important;
+  }
+}
+
+.label-success {
+  &:extend(.bg-green);
+  &:after{
+  	border-right-color:@green!important;
+  }
+}
+
+.label-blue {
+  &:extend(.bg-blue);
+  &:after{
+  	border-right-color:@blue!important;
+  }
+}
+
+.label-purple {
+  &:extend(.bg-purple);
+  &:after{
+  	border-right-color:@purple!important;
+  }
+}

@@ -1,0 +1,127 @@
+@import "normalize.less";
+@import "fun.less";
+@import "base.less";
+@import "hb.less";
+
+.icon_arrow_left {
+	background-image: url('../images/icon_left.png');
+	height: .47rem;
+	width: .235rem;
+}
+
+.in-list {
+	.width;
+	.padd-t(.05rem);
+	.f-txt-1;
+	line-height: normal;
+	>li {
+		.width;
+		margin-bottom: .3125rem;
+		.flexTab();
+		.shadow-1;
+		.padd-t();
+		.padd-v(.343rem);
+		.border-radius(.3rem);
+	}
+}
+
+.in-list {
+	position: relative;
+	margin-top: .52rem;
+}
+
+.flex-start {
+	&,
+	>li {
+		justify-content: flex-start;
+	}
+}
+
+.flex-be {
+	&,
+	>li {
+		justify-content: space-between;
+	}
+}
+
+.tit {
+	.f-tit-1;
+	.padd-t;
+	padding-top: .62rem;
+	padding-bottom: .22rem;
+}
+
+button {
+	border: none;
+}
+
+.btn-1 {
+	.f(extract(@fs, 7),
+	@themeColor);
+	height:1rem;
+	.border-radius(8px);
+	border:1px solid @themeColor;
+	background-color:#fff;
+	outline:none;
+}
+
+.btn-1-active {
+	background-color: @themeColor;
+	color: #fff;
+}
+
+.btn-3 {
+	.width(80%);
+	.f(@fs-big,#fff);
+	height: 1.28rem;
+	.border-radius(1.28rem);
+	background-color: @themeColor;
+}
+
+.no_data {
+	.f-txt-3;
+}
+
+.no_flex {
+	display: block;
+}
+
+.solide-tab {
+	.width;
+	overflow-x: auto;
+	>.tab_con {
+		width: auto;
+		white-space: nowrap;
+		font-size: 0px;
+		.item {
+			.f-txt-1;
+			display: inline-block;
+			width: 33.3333%;
+		}
+	}
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}
+
+.tip-1 {
+	.w8;
+	padding: .52rem .7rem;
+	margin-left: 1rem;
+}
+
+.tip-2 {
+	.width(9rem);
+	margin-left: .5rem;
+	margin-top: .52rem;
+}
+
+//是否录取
+.icon_enter {
+	position: absolute;
+	right: 0;
+	width: 2.88rem!important;
+	.floor(1);
+	top: .72rem;
+	right: .31rem;
+}

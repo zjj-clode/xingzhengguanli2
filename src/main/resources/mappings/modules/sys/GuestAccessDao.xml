@@ -1,0 +1,608 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.GuestAccessDao">
+
+	<sql id="guestAccessColumns">
+		a.id AS "id",
+
+		a.session_id AS "sessionId",
+		
+		a.login_year AS "loginYear",
+		a.login_year_month AS "loginYearMonth",
+		a.login_year_month_day AS "loginYearMonthDay",
+		a.login_date_time AS "loginDateTime",
+		a.logout_date_time AS "logoutDateTime",
+		a.duration AS "duration",
+		a.last_access_time AS "lastAccessTime",
+
+		a.url AS "url",
+		a.ip AS "ip",
+		a.country AS "country",
+		a.region AS "region",
+		a.city AS "city",
+		a.area AS "area",
+		
+		a.browser AS "browser",
+		a.browser_version AS "browserVersion",
+		a.os AS "os",
+		a.device_type AS "deviceType",
+		a.manufacturer AS "manufacturer",
+		
+		a.header_info AS "headerInfo",
+		
+		a.is_online AS "online",
+		
+		a.login_name AS "loginName",
+		a.name AS "name",
+		a.dep_id AS "depId",
+		a.dep_name AS "depName",
+
+		a.plat_form AS "platform",
+
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+
+	<sql id="guestAccessJoins">
+
+	</sql>
+
+	<select id="get" resultType="GuestAccess">
+		SELECT
+		<include refid="guestAccessColumns" />
+		FROM sys_guest_access a
+		<include refid="guestAccessJoins" />
+		WHERE a.id = #{id}
+	</select>
+
+	<!--  
+	<sql id="find_guestAccess_where">
+		<if test="delFlag != null and delFlag != ''">
+			a.del_flag = #{delFlag}
+		</if>
+		<if test="name != null and name != ''">
+			AND a.name LIKE 
+				<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+		</if>
+		<if test="loginName != null and loginName != ''">
+			AND a.login_name LIKE 
+				<if test="dbName == 'oracle'">'%'||#{loginName}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{loginName}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{loginName},'%')</if>
+		</if>
+		<if test="online != null and online != ''">
+			AND a.is_online = #{online}
+		</if>
+		<if test="loginDateTimeStart!=null and loginDateTimeStart!=''">
+			AND a.login_date_time &gt;= #{loginDateTimeStart}
+		</if>
+		<if test="loginDateTimeEnd!=null and loginDateTimeEnd!=''">
+			AND a.login_date_time &lt;= #{loginDateTimeEnd}
+		</if>
+	</sql>
+	-->
+	
+	<sql id="find_guestAccess_where">
+		a.del_flag = #{DEL_FLAG_NORMAL}
+						<if test="beginLoginDateTime != null and endLoginDateTime != null ">
+			AND a.login_date_time BETWEEN #{beginLoginDateTime} AND #{endLoginDateTime}
+		</if>
+	</sql>
+
+	<select id="findCount" resultType="long">
+		SELECT COUNT(*) FROM sys_guest_access a
+		<include refid="guestAccessJoins" />
+		<where>
+			<include refid="find_guestAccess_where" />
+		</where>
+	</select>
+
+	<select id="findList" resultType="GuestAccess">
+		SELECT
+		<include refid="guestAccessColumns" />
+		FROM sys_guest_access a
+		<include refid="guestAccessJoins" />
+		<where>
+			<include refid="find_guestAccess_where" />
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.login_date_time DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="GuestAccess">
+		SELECT
+		<include refid="guestAccessColumns" />
+		FROM sys_guest_access a
+		<include refid="guestAccessJoins" />
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.login_date_time DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<!-- 某个月按天分组统计登录人次 -->
+	<select id="countMonthByDay" resultType="hashmap" parameterType="GuestAccess">
+		SELECT 
+		<if test="dbName == 'oracle'">
+			TO_CHAR(a.login_date_time,'yyyy-mm-dd') AS "login_date",
+		</if>
+		<if test="dbName == 'mysql'">
+			DATE_FORMAT(a.login_date_time,'%Y-%m-%d') AS "login_date",
+		</if>
+		COUNT(id) AS "login_count"
+		FROM sys_guest_access a 
+		WHERE a.login_year_month = #{loginYearMonth}
+		GROUP BY
+		<if test="dbName == 'oracle'">
+			TO_CHAR(a.login_date_time,'yyyy-mm-dd')
+		</if>
+		<if test="dbName == 'mysql'">
+			login_date
+		</if>
+	</select>
+	
+	<!-- 某年按月分组统计登录人次 -->
+	<select id="countYearByMonth" resultType="hashmap" parameterType="GuestAccess">
+		SELECT 
+		a.login_year_month AS "login_month",
+		COUNT(id) AS "login_count"
+		FROM sys_guest_access a 
+		WHERE a.login_year = #{loginYear} 
+		GROUP BY a.login_year_month
+	</select>
+	
+	<!-- 某段时间内登录次数按账号排序 -->
+	<select id="countByLoginname" resultType="hashmap" parameterType="GuestAccess">
+		SELECT 
+		a.login_name AS "login_name",
+		a.name AS "name",
+		COUNT(id) AS "login_count"
+		FROM sys_guest_access a 
+		WHERE 1 = 1
+		<if test="loginDateTimeStart!=null and loginDateTimeStart!=''">
+			AND a.login_date_time &gt;= #{loginDateTimeStart}
+		</if>
+		<if test="loginDateTimeEnd!=null and loginDateTimeEnd!=''">
+			AND a.login_date_time &lt;= #{loginDateTimeEnd}
+		</if>
+		GROUP BY a.login_name,a.name
+		ORDER BY COUNT(id) DESC
+	</select>
+	
+	
+	<!-- 根据昨天时间统计之前30天的登录次数、人数 -->
+	<select id="countForHighcharts" resultType="hashmap">
+		SELECT 
+		a.login_year_month_day AS "login_year_month_day",
+		COUNT(1) AS "login_count",
+		count(distinct(a.login_name)) AS "login_name_count"
+		FROM sys_guest_access a 
+		WHERE a.login_year_month_day &gt;= #{beginDay} 
+		and a.login_year_month_day &lt;= #{endDay} 
+		GROUP BY a.login_year_month_day
+		ORDER BY a.login_year_month_day DESC
+	</select>
+	
+	<!-- 根据昨天时间统计之前30天的学生登录次数、人数 -->
+	<select id="countForStudentHighcharts" resultType="hashmap">
+		SELECT 
+		a.login_year_month_day AS "login_year_month_day",
+		COUNT(1) AS "login_count",
+		count(distinct(a.login_name)) AS "login_name_count"
+		FROM sys_guest_access a,sys_user b 
+		where a.login_name = b.login_name and b.user_type = '3' 
+		and a.login_year_month_day &gt;= #{beginDay} 
+		and a.login_year_month_day &lt;= #{endDay} 
+		GROUP BY a.login_year_month_day
+		ORDER BY a.login_year_month_day DESC
+	</select>
+	
+
+	<insert id="insert">
+		INSERT INTO sys_guest_access(
+		id,
+
+		session_id,
+		
+		login_year,
+		login_year_month,
+		login_year_month_day,
+		login_date_time,
+		logout_date_time,
+		duration,
+		last_access_time,
+		
+		url,
+		ip,
+		country,
+		region,
+		city,
+		area,
+		
+		browser,
+		browser_version,
+		os,
+		device_type,
+		manufacturer,
+		
+		header_info,
+		
+		is_online,
+		
+		login_name,
+		name,
+		dep_id,
+		dep_name,
+
+		plat_form,
+
+		create_by,
+		create_date,
+		update_by,
+		update_date,
+		remarks,
+		del_flag
+		) VALUES (
+		#{id},
+
+		#{sessionId},
+		
+		#{loginYear},
+		#{loginYearMonth},
+		#{loginYearMonthDay},
+		#{loginDateTime},
+		#{logoutDateTime},
+		#{duration},
+		#{lastAccessTime},
+		
+		#{url},
+		#{ip},
+		#{country},
+		#{region},
+		#{city},
+		#{area},
+
+		#{browser},
+		#{browserVersion},
+		#{os},
+		#{deviceType},
+		#{manufacturer},
+		
+		#{headerInfo},
+		
+		#{online},
+
+		#{loginName},
+		#{name},
+		#{depId},
+		#{depName},
+
+		#{platform},
+
+		#{createBy.id},
+		#{createDate},
+		#{updateBy.id},
+		#{updateDate},
+		#{remarks},
+		#{delFlag}
+		)
+	</insert>
+
+	 <insert id ="batchInsert" parameterType="java.util.List">
+		INSERT INTO sys_guest_access(
+			id,
+			session_id,
+			login_year,
+			login_year_month,
+			login_year_month_day,
+			login_date_time,
+			logout_date_time,
+			duration,
+			last_access_time,
+			url,
+			ip,
+			country,
+			region,
+			city,
+			area,
+			browser,
+			browser_version,
+			os,
+			device_type,
+			manufacturer,
+			header_info,
+			is_online,
+			login_name,
+			name,
+			dep_id,
+			dep_name,
+			plat_form,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) 
+		   <foreach collection="list" item="item" index="index" separator =",">
+       
+		VALUES (
+			#{item.id},
+			#{item.sessionId},
+			#{item.loginYear},
+			#{item.loginYearMonth},
+			#{item.loginYearMonthDay},
+			#{item.loginDateTime},
+			#{item.logoutDateTime},
+			#{item.duration},
+			#{item.lastAccessTime},
+			#{item.url},
+			#{item.ip},
+			#{item.country},
+			#{item.region},
+			#{item.city},
+			#{item.area},
+			#{item.browser},
+			#{item.browserVersion},
+			#{item.os},
+			#{item.deviceType},
+			#{item.manufacturer},
+			#{item.headerInfo},
+			#{item.online},
+			#{item.loginName},
+			#{item.name},
+			#{item.depId},
+			#{item.depName},
+			#{item.platform},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+	</insert>
+	
+	<insert id ="batchInsertUpdate" parameterType="java.util.List">
+		INSERT INTO sys_guest_access(
+			id,
+			session_id,
+			login_year,
+			login_year_month,
+			login_year_month_day,
+			login_date_time,
+			logout_date_time,
+			duration,
+			last_access_time,
+			url,
+			ip,
+			country,
+			region,
+			city,
+			area,
+			browser,
+			browser_version,
+			os,
+			device_type,
+			manufacturer,
+			header_info,
+			is_online,
+			login_name,
+			name,
+			dep_id,
+			dep_name,
+			plat_form,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator =",">
+        (
+			#{item.id},
+			#{item.sessionId},
+			#{item.loginYear},
+			#{item.loginYearMonth},
+			#{item.loginYearMonthDay},
+			#{item.loginDateTime},
+			#{item.logoutDateTime},
+			#{item.duration},
+			#{item.lastAccessTime},
+			#{item.url},
+			#{item.ip},
+			#{item.country},
+			#{item.region},
+			#{item.city},
+			#{item.area},
+			#{item.browser},
+			#{item.browserVersion},
+			#{item.os},
+			#{item.deviceType},
+			#{item.manufacturer},
+			#{item.headerInfo},
+			#{item.online},
+			#{item.loginName},
+			#{item.name},
+			#{item.depId},
+			#{item.depName},
+			#{item.platform},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+			logout_date_time = values(logout_date_time),
+			duration = values(duration),
+			last_access_time = values(last_access_time),
+			url = values(url),
+			ip = values(ip),
+			country = values(country),
+			region = values(region),
+			city = values(city),
+			area = values(area),
+			browser = values(browser),
+			browser_version = values(browser_version),
+			os = values(os),
+			device_type = values(device_type),
+			manufacturer = values(manufacturer),
+			header_info = values(header_info),
+			is_online = values(is_online),
+			login_name = values(login_name),
+			name = values(name),
+			dep_id = values(dep_id),
+			dep_name = values(dep_name),
+			plat_form = values(plat_form),
+			update_by = values(update_by),
+			update_date = values(update_date),
+			remarks = values(remarks)
+		
+	</insert>
+	
+	<update id ="batchUpdate" parameterType="java.util.List" >
+      <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+		UPDATE sys_guest_access SET 	
+			logout_date_time = #{item.logoutDateTime},
+			duration = #{item.duration},
+			last_access_time = #{item.lastAccessTime},
+			url = #{item.url},
+			ip = #{item.ip},
+			country = #{item.country},
+			region = #{item.region},
+			city = #{item.city},
+			area = #{item.area},
+			browser = #{item.browser},
+			browser_version = #{item.browserVersion},
+			os = #{item.os},
+			device_type = #{item.deviceType},
+			manufacturer = #{item.manufacturer},
+			header_info = #{item.headerInfo},
+			is_online = #{item.online},
+			login_name = #{item.loginName},
+			name = #{item.name},
+			dep_id = #{item.depId},
+			dep_name = #{item.depName},
+			plat_form = #{item.platform},
+			update_by = #{item.updateBy.id},
+			update_date = #{item.updateDate},
+			remarks = #{item.remarks}
+		WHERE id = #{id}
+		</foreach>
+	</update>
+
+	<update id="update">
+		UPDATE sys_guest_access SET 	
+       		logout_date_time = #{logoutDateTime},
+			duration = #{duration},
+			last_access_time = #{lastAccessTime},
+			url = #{url},
+			ip = #{ip},
+			country = #{country},
+			region = #{region},
+			city = #{city},
+			area = #{area},
+			browser = #{browser},
+			browser_version = #{browserVersion},
+			os = #{os},
+			device_type = #{deviceType},
+			manufacturer = #{manufacturer},
+			header_info = #{headerInfo},
+			is_online = #{online},
+			login_name = #{loginName},
+			name = #{name},
+			dep_id = #{depId},
+			dep_name = #{depName},
+			plat_form = #{platform},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 禁用 -->
+	<update id="disable">
+		UPDATE sys_guest_access SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<update id="logout">
+		UPDATE sys_guest_access SET
+		logout_date_time = #{logoutDateTime},
+		duration = #{duration},
+		last_access_time = #{lastAccessTime},
+		is_online = '0'
+		WHERE id = #{id}
+	</update>
+	
+	<update id="logoutAll">
+		UPDATE sys_guest_access SET
+		is_online = '0'
+		WHERE is_online = '1'
+	</update>
+
+	<!-- 真删除 -->
+	<delete id="delete">
+		DELETE FROM sys_guest_access
+		WHERE id = #{id}
+	</delete>
+	
+	<!-- 批量删除 ,参数为String类型id数组，如   String[] ids ，url: ids=1&ids=2&ids=3 或 ids=1,2,3 -->
+	<delete id="deleteByIds1" parameterType="String">
+		DELETE FROM sys_guest_access WHERE id IN
+		<foreach collection="array" item="item" open=" (" close=") " separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	<delete id="deleteByIds" parameterType="GuestAccess">
+		DELETE FROM sys_guest_access WHERE id IN
+		<foreach collection="ids" item="id" open=" (" close=") " separator=",">
+			#{id}
+		</foreach>
+	</delete>
+
+	<select id="countGuestAccess" resultType="long">
+	
+		SELECT count(login_name) 
+		from sys_guest_access 
+		WHERE 
+			login_year_month_day = DATE(NOW())
+			and del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+	
+	<select id="countViewGuestAccess" resultType="long">
+	
+		SELECT count(distinct login_name) 
+		from sys_guest_access 
+		WHERE 
+			login_year_month_day = DATE(NOW())
+			and del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+</mapper>

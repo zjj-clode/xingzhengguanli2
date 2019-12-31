@@ -1,0 +1,48 @@
+/* Headings style */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-size: 12px;
+}
+/* Paragraph style */
+p { margin: 0; }
+/* List style */
+ol, ul, li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+dl, dt, dd {
+  margin: 0;
+  padding: 0;
+}
+/* Image style */
+img {
+  border: 0;
+  vertical-align: bottom;
+}
+a img { vertical-align: bottom; }
+/* Link style */
+a:link {
+  color: #333;
+  text-decoration: none;
+}
+a:visited {
+  color: #333;
+  text-decoration: none;
+}
+a:hover, a:active, a:focus {
+  color: #cf4646;
+  text-decoration: none;
+}
+/* Form style */
+form {
+  margin: 0;
+  padding: 0;
+}
+label { cursor: pointer; }
+input { font-family: 'Arial', 'Simsun', 'Verdana', 'Helvetica', sans-serif; }
+/*body*/
+body {
+  margin: 0;
+  padding: 0;
+}

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+<title>滑动验证码</title>
+
+<link rel="stylesheet" type="text/css" href="css/verify.css">
+</head>
+
+<body style="padding-top: 300px; padding-left: 200px;">
+	<h3>滑动验证码</h3>
+	<div id="mpanel4" style="margin-top: 50px;"></div>
+
+	<div id="mpanel5" style="margin-top: 300px"></div>
+
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/verify.js"></script>
+
+	<script>
+		$('#mpanel4').slideVerify({
+			mode : 'pop',//pop,fixed
+			initUrl : '/ceaie/f/slide/init',
+			imgUrl : '/ceaie/f/slide/backImg',
+			slideUrl : '/ceaie/f/slide/slideImg',
+			checkUrl : '/ceaie/f/slide/check',
+			imgSize : {
+				width : '350px',
+				height : '200px'
+			},
+			blockSize : {
+				width : '50px',
+				height : '50px'
+			},
+			barSize : {
+				width : '350px',
+				height : '40px'
+			},
+			explain : 'Right Slip to complate validation',
+			ready : function() {
+			},
+			success : function() {
+				//alert('验证成功，添加你自己的代码！');
+				//......后续操作
+			},
+			error : function() {
+				//	        	alert('验证失败！');
+			}
+		});
+
+		/* $('#mpanel5').pointsVerify({
+			mode : 'pop',
+			defaultNum : 4,
+			checkNum : 2,
+			vSpace : 5,
+			initUrl : '/jeesite/slide/wordInit',
+			imgUrl : '/jeesite/slide/wordImg',
+			checkUrl : '/jeesite/slide/wordCheck',
+			imgSize : {
+				width : '400px',
+				height : '200px',
+			},
+			barSize : {
+				width : '400px',
+				height : '40px',
+			},
+			ready : function() {
+			},
+			success : function() {
+				alert('验证匹配！');
+			},
+			error : function() {
+				//alert('验证码不匹配！');
+			}
+
+		}); */
+	</script>
+</body>
+
+</html>

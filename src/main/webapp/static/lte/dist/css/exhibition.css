@@ -1,0 +1,192 @@
+body{
+  min-width:1500px;
+  overflow-x: auto;
+}
+/*exh-tip*/
+.exh-tip i{
+  font-size: 28px;
+  margin-right: 5px;
+  vertical-align: -5px;
+}
+.exh-tip .badge{
+  padding:3px;
+}
+.tableTopBtn .btn-default{
+  background: #d2d6de;
+  border-color:#bbb;
+}
+.tableTopBtn .btn-default:hover{
+  background: #ccc;
+  border-color:#aaa;
+}
+.exh-main{
+  position: relative;
+  width: 1200px;
+  margin:0 auto 20px;
+}
+/*exh-inn*/
+.exh-inn{
+  position: relative;
+  width: 1200px;
+  height: 600px;
+  margin-top: 10px;
+  /*border:1px solid #ddd;*/
+  background: #fff;
+}
+.exh-inn li,.exh-inn ul{
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.exh-inn .zxt{
+  width: 50px;
+  height:200px;
+  background: #fff;
+  -webkit-writing-mode: vertical-rl;
+  writing-mode: vertical-rl;
+  text-align: center;
+  float: right;
+  line-height:50px;
+  letter-spacing: 2px;
+  margin: 200px 15px 0 0;
+}
+.exh-inn .zwlist li{
+  height:90px;
+  width: 50px;
+  padding:10px 0 0;
+  text-align:center;
+  font-size: 12px;
+}
+.exh-inn .zwlist8 li{
+  height:112px;
+  padding:20px 0 0;
+}
+.exh-inn .zwlist .zwnum{
+  display: block;
+  font-size:20px;
+  font-weight: bold;
+}
+.exh-inn .zwtype{
+  display: inline-block;
+  padding:3px 10px;
+  border-radius:10px;
+}
+.exh-inn .zwlist8 .zwtype{
+  padding:3px;
+}
+.exh-inn .zwlist a{
+  display: block;
+  padding-bottom:10px;
+}
+.exh-inn .zwlist1{
+  float:right;
+  margin-right: 15px;
+}
+.exh-inn .zwlist1 li{
+  margin-bottom: 12px;
+}
+.exh-inn .zwlist1 li:last-child{
+  margin-bottom: 0;
+}
+.exh-inn .zwlist2{
+  height: 192px;
+  float: right;
+  width: 770px;
+  margin-right: 140px;
+  margin-top: 135px;
+}
+.exh-inn .zwlist2 li,
+.exh-inn .zwlist3 li,
+.exh-inn .zwlist4 li{
+  float: left;
+  margin:0 5px 12px 0;
+}
+.exh-inn .zwlist3{
+  position: absolute;
+  top:0;
+  right: 160px;
+  width: 935px;
+}
+.exh-inn .zwlist4{
+  position: absolute;
+  bottom:0;
+  right: 270px;
+  width: 550px;
+}
+.exh-inn .zwlist4 li{
+  margin-bottom: 0;
+}
+.exh-inn .zwlist5{
+  position: absolute;
+  bottom:0;
+  left: 165px;
+  width: 50px;
+}
+.exh-inn .zwlist6{
+  position: absolute;
+  bottom: 125px;
+  left: 85px;
+  width: 50px;
+}
+.exh-inn .zwlist7{
+  position: absolute;
+  top:120px;
+  left: 85px;
+  width: 50px;
+}
+.exh-inn .zwlist8 li{
+  margin-bottom: 10px;
+}
+.exh-inn .bg-red a,
+.exh-inn .bg-green a{
+  color:#fff;
+}
+.exh-inn .rk{
+  position: absolute;
+  left:278px;
+  bottom:5px;
+}
+.exh-inn .ck{
+  position: absolute;
+  right:182px;
+  bottom:5px;
+}
+.exh-inn .rk span,
+.exh-inn .ck span{
+  display: block;
+  text-align: center;
+  font-size: 12px;
+  margin-top: 2px;
+}
+.exh-footer{
+  position: relative;
+  width: 1200px;
+  margin-top: 10px;
+  padding-bottom: 50px;
+}
+.exh-footer .toilet1{
+  float: left;
+  margin-left: 5px;
+}
+.exh-footer .toilet2{
+  float: right;
+  margin-right: 5px;
+}
+.exh-footer .qdrc{
+  position:absolute;
+  left: 165px;
+  height: 50px;
+  line-height: 50px;
+  width: 150px;
+  top:0;
+  text-align: center;
+}
+.exh-footer .fwt{
+  position:absolute;
+  left: 379px;
+  height: 50px;
+  line-height: 50px;
+  width: 200px;
+  bottom:0;
+  text-align: center;
+}

@@ -1,0 +1,57 @@
+.zpPop{
+  left:0;
+  background: #fff;
+  padding: 10px;
+  top:0;
+  width:540px;
+  z-index: 2;
+}
+.zpPop ul{
+  border-bottom:1px solid #dedede;
+}
+.zpPop li{
+  height: 26px;
+  line-height: 26px;
+  margin-right:5px;
+  border-bottom: none;
+  cursor:pointer;
+  white-space: nowrap;
+  padding:0 8px;
+}
+.zpPop li.active{
+  border:1px solid #dedede;
+  border-bottom:none;
+  margin-bottom:-1px;
+  background: #fff;
+}
+.zpPop .zpcont{
+  background: #fff;
+  padding-top:1px;
+  border:1px solid #dedede;
+  border-top: none;
+  height: 180px;
+  overflow: auto;
+}
+.zpPop .zpcont dl{
+  margin-bottom: 0;
+}
+.zpPop .zpcont dt{
+  background: #f2f2f2;
+  height:25px;
+  line-height: 25px;
+  padding:0 10px;
+}
+.zpPop .zpcont dd{
+  padding:5px 10px;
+}
+.zpPop .zpcont dd input{
+  margin: 0 4px 0 0;
+  vertical-align:-2px;
+}
+.zpPop .zpcont dd label{
+  cursor: pointer;
+}
+.zpPop .zpBtn{
+  right:10px;
+  top:5px;
+}

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<decorators defaultDir="/WEB-INF/views">
+	
+	<!-- 旧版后台 -->
+	<decorator name="blank" page="layouts/blank.jsp" />
+	<decorator name="default" page="layouts/default.jsp" />
+	
+	<!-- 新版后台 -->
+	<decorator name="lte" page="/WEB-INF/views/layouts/lte.jsp" />
+	<decorator name="lteblank" page="layouts/lteblank.jsp" />
+	
+    <!-- PC版前台页面 -->
+	<decorator name="common_default_basic" page="front/${custmor.code}/layouts/default.jsp" />
+    <!-- 移动版前台页面 -->
+	<decorator name="common_mobile_default_basic" page="mobile/front/${custmor.code}/layouts/default.jsp" />
+	
+</decorators>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudinte.zhaosheng.modules.chat.dao.ChatUserMsgDao">
+    
+	<sql id="chatUserMsgColumns">
+		a.id AS "id",
+		a.sender AS "sender",
+		a.readed AS "readed",
+		a.session_id AS "sessionId",
+		a.chat_msg_id AS "chat_msg_id",
+		a.del_flag AS "delFlag",
+		m.content AS "content",
+		m.create_date AS "createDate"
+	</sql>
+	
+	<sql id="chatUserMsgJoins">
+	</sql>
+    
+	<select id="get" resultType="ChatUserMsg">
+		SELECT 
+			<include refid="chatUserMsgColumns"/>
+		FROM chat_user_msg a
+		<include refid="chatUserMsgJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ChatUserMsg">
+		SELECT 
+			<include refid="chatUserMsgColumns"/>
+		FROM chat_user_msg a 
+		LEFT JOIN chat_msg m ON a.chat_msg_id = m.id
+		<where>
+			<if test="sessionId != null and sessionId != ''">
+				AND a.session_id = #{sessionId}
+			</if>
+			<if test="createDate != null">
+				AND m.create_date &lt; #{createDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY m.create_date desc
+			</when>
+			<otherwise>
+				ORDER BY m.create_date desc
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ChatUserMsg">
+		SELECT 
+			<include refid="chatUserMsgColumns"/>
+		FROM chat_user_msg a
+		<include refid="chatUserMsgJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO chat_user_msg(
+			id,
+			sender,
+			readed,
+			session_id,
+			chat_msg_id,
+			del_flag
+		) VALUES (
+			#{id},
+			#{sender},
+			#{readed},
+			#{sessionId},
+			#{chatMsgId},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE chat_user_msg SET 	
+			sender = #{sender},
+			readed = #{readed},
+			session_id = #{sessionId},
+			chat_msg_id = #{chatMsgId},
+			del_flag = #{delFlag}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE chat_user_msg SET = '1'
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

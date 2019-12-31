@@ -1,0 +1,68 @@
+.video-news{
+	height: 142px;
+}
+
+/*ie7*/
+section .special ul li{
+	*width:174px;
+}
+section .information ul li{
+	*height: 53px;
+}
+section .information ul li a{
+	*width:255px;
+}
+section .express ul li{
+	*height: 72px;
+}
+.breadcrumb li{
+	*display: inline;
+	*zoom:1;
+	*margin-right: 10px;
+}
+section .news-right .news-column .news-media li a p{
+	*width: 100px;
+}
+input[type="text"],input[type="password"],input[type="search"],input[type="tel"]{
+	*height: 20px;
+}
+.pass-wrap .pass-form li img{
+	*vertical-align: -2px;
+	*margin-left: 0;
+}
+.pass-wrap .pass-form li i{
+	*vertical-align: 7px;
+}
+button{
+	*line-height: 37px;
+}
+#qna .qna-search .qna-search-main .searchBar input{
+	*width: 542px;
+	*height: 44px;
+}
+.regAuth-main .reg_steps li{
+	*width:35px;
+}
+.regAuth-main .reg_steps li.step1,
+.regAuth-main .reg_steps li.step2{
+	*padding-right: 180px;
+	*width:68px;
+}
+.paging li{
+	*display: inline;
+	*zoom:1;
+}
+.login-cont .login-right .loginMain .loginInn .loginForm li input{
+	*width:300px;
+}
+.calendar .calendar-main ul li{
+	*display: inline;
+	*zoom:1;
+}
+.calendar .calendar-main ul{
+	*position: relative;
+}
+.calendar .calendar-main{
+	*width:975px;
+	*position: relative;
+}

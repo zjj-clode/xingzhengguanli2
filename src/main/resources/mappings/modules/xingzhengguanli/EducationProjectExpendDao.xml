@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudinte.modules.xingzhengguanli.dao.EducationProjectExpendDao">
+    
+	<sql id="educationProjectExpendColumns">
+		a.id AS "id",
+		a.project_name AS "projectName",
+		a.project_unit AS "projectUnit",
+		a.project_code AS "projectCode",
+		a.project_category AS "projectCategory",
+		a.project_start_year AS "projectStartYear",
+		a.project_cycle AS "projectCycle",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="educationProjectExpendJoins">
+	</sql>
+    
+	<select id="get" resultType="EducationProjectExpend">
+		SELECT 
+			<include refid="educationProjectExpendColumns"/>
+		FROM education_project_expend a
+		<include refid="educationProjectExpendJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<sql id="find_educationProjectExpend_where">
+		a.del_flag = #{DEL_FLAG_NORMAL}
+	</sql>
+	
+	<select id="findCount" resultType="long">
+		SELECT COUNT(*)
+		FROM education_project_expend a
+		<include refid="educationProjectExpendJoins"/>
+		<where>
+			<include refid="find_educationProjectExpend_where"/>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="EducationProjectExpend">
+		SELECT 
+			<include refid="educationProjectExpendColumns"/>
+		FROM education_project_expend a
+		<include refid="educationProjectExpendJoins"/>
+		<where>
+			<include refid="find_educationProjectExpend_where"/>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="EducationProjectExpend">
+		SELECT 
+			<include refid="educationProjectExpendColumns"/>
+		FROM education_project_expend a
+		<include refid="educationProjectExpendJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO education_project_expend(
+			id,
+			project_name,
+			project_unit,
+			project_code,
+			project_category,
+			project_start_year,
+			project_cycle,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{projectName},
+			#{projectUnit},
+			#{projectCode},
+			#{projectCategory},
+			#{projectStartYear},
+			#{projectCycle},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	
+	  <insert id ="batchInsert" parameterType="java.util.List">
+		INSERT INTO education_project_expend(
+			id,
+			project_name,
+			project_unit,
+			project_code,
+			project_category,
+			project_start_year,
+			project_cycle,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) 
+		   <foreach collection="list" item="item" index="index" separator =",">
+       
+		VALUES (
+			#{item.id},
+			#{item.projectName},
+			#{item.projectUnit},
+			#{item.projectCode},
+			#{item.projectCategory},
+			#{item.projectStartYear},
+			#{item.projectCycle},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+	</insert>
+	
+	<insert id ="batchInsertUpdate" parameterType="java.util.List">
+		INSERT INTO education_project_expend(
+			id,
+			project_name,
+			project_unit,
+			project_code,
+			project_category,
+			project_start_year,
+			project_cycle,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator =",">
+        (
+			#{item.id},
+			#{item.projectName},
+			#{item.projectUnit},
+			#{item.projectCode},
+			#{item.projectCategory},
+			#{item.projectStartYear},
+			#{item.projectCycle},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+			project_name = values(project_name),
+			project_unit = values(project_unit),
+			project_code = values(project_code),
+			project_category = values(project_category),
+			project_start_year = values(project_start_year),
+			project_cycle = values(project_cycle),
+			update_by = values(update_by),
+			update_date = values(update_date),
+			remarks = values(remarks)
+		
+	</insert>
+	
+ <update id ="batchUpdate" parameterType="java.util.List" >
+      <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+		UPDATE education_project_expend SET 	
+			project_name = #{item.projectName},
+			project_unit = #{item.projectUnit},
+			project_code = #{item.projectCode},
+			project_category = #{item.projectCategory},
+			project_start_year = #{item.projectStartYear},
+			project_cycle = #{item.projectCycle},
+			update_by = #{item.updateBy.id},
+			update_date = #{item.updateDate},
+			remarks = #{item.remarks}
+		WHERE id = #{id}
+		</foreach>
+	</update>
+	
+	<update id="update">
+		UPDATE education_project_expend SET 	
+       			project_name = #{projectName},
+			project_unit = #{projectUnit},
+			project_code = #{projectCode},
+			project_category = #{projectCategory},
+			project_start_year = #{projectStartYear},
+			project_cycle = #{projectCycle},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 禁用 -->
+	<update id="disable">
+		UPDATE education_project_expend SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete">
+		DELETE FROM education_project_expend WHERE id = #{id}
+	</delete>
+	
+	<!-- 批量删除 ,参数为String类型id数组，如   String[] ids ，url: ids=1&ids=2&ids=3 或 ids=1,2,3 -->
+	<delete id="deleteByIds1" parameterType="String">
+		DELETE FROM education_project_expend WHERE id IN
+		<foreach collection="array" item="item" open=" (" close=") " separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	
+	<delete id="deleteByIds" parameterType="EducationProjectExpend">
+		DELETE FROM education_project_expend WHERE id IN
+		<foreach collection="ids" item="id" open=" (" close=") " separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+</mapper>

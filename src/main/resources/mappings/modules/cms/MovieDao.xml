@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.cms.dao.MovieDao">
+    
+	<sql id="movieColumns">
+		a.id AS "id",
+		a.category_id AS "category.id",
+		a.title AS "title",
+		a.color AS "color",
+		a.image AS "image",
+		a.href AS "href",
+		a.link AS "link",
+		a.hits AS "hits",
+		a.weight AS "weight",
+		a.weight_date AS "weightDate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		c.name AS "category.name",
+		u.name AS "user.name",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="movieJoins">
+	    JOIN cms_category c ON c.id = a.category_id
+		JOIN sys_user u ON u.id = a.create_by
+	</sql>
+    
+	<select id="get" resultType="Movie">
+		SELECT 
+			<include refid="movieColumns"/>
+		FROM cms_movie a
+		<include refid="movieJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Movie">
+		SELECT 
+			<include refid="movieColumns"/>
+		FROM cms_movie a
+		<include refid="movieJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="title != null and title != ''">
+				AND a.title LIKE 
+					<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+			</if>
+			<if test="category != null">
+				<if test="category.id != null and category.id != ''">
+					AND a.category_id = #{category.id} 
+				</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Movie">
+		SELECT 
+			<include refid="movieColumns"/>
+		FROM cms_movie a
+		<include refid="movieJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cms_movie(
+			id,
+			category_id,
+			title,
+			color,
+			image,
+			href,
+			link,
+			weight,
+			weight_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{category.id},
+			#{title},
+			#{color},
+			#{image},
+			#{href},
+			#{link},
+			#{weight},
+			#{weightDate},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE cms_movie SET 	
+			category_id = #{category.id},
+			title = #{title},
+			color = #{color},
+			image = #{image},
+			href = #{href},
+			link = #{link},
+			weight = #{weight},
+			weight_date = #{weightDate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE cms_movie SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+		<update id="updateHitsAddOne">
+		update cms_movie set
+			 hits = hits+1
+		 WHERE id = #{id}
+	</update>
+</mapper>

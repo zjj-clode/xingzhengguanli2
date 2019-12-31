@@ -1,0 +1,122 @@
+@CHARSET "UTF-8";
+.custom_cal_wrap {
+}
+.custom_cal_sm {
+	margin-top:40px;
+	-webkit-margin-before: 39px;
+	width: 225px;
+	float: left;
+	background-color: #eee;
+}
+.custom_cal_sm.border{
+	border:1px solid #ddd;
+	border-right: none;	
+}
+
+.custom_cal_tool {
+}
+.custom_cal_fc {
+	float: left;
+	min-width: 300px;
+}
+.box-body .fc {
+    margin-top: 0;
+}
+.fc-toolbar {
+	padding: 0 0 10px 0;
+}
+.fc-toolbar h2 {
+	font-size: 14px;
+	font-weight: normal;
+	line-height: 0px;
+}
+.fc-toolbar.fc-header-toolbar {
+	margin-bottom: 0;
+}
+.fc-day-header {
+	background-color: white;
+	font-weight: normal;
+}
+.fc-view-container{
+	border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    background-color: white;
+}
+.fc-view-container.noSmall {
+	margin-left: -225px;
+}
+.fc-ltr .fc-basic-view .fc-day-top .fc-day-number {
+	float: left;
+	font-weight: normal;
+	font-size: 12px;
+}
+.create_agenda {
+	font-size: 12px;
+	padding: 0 5px 0 0;
+	z-index:8;
+	display: none;
+}
+.fc-header-toolbar {
+	margin-left: -225px;
+}
+.fc-day-grid-event:link {
+	color:white;
+}
+.fc-day-grid-event:visited {
+	color:white;
+}
+.fc-day-grid-event:link {
+	color:white;
+}
+.fc-day-grid-event:visited {
+	color:white;
+}
+.fc-day.active {
+	background-color: #EBF8FB;
+}
+#createEventModal .checkbox-inline {
+	padding-top: 3px;
+	margin-right: 10px;
+}
+.fc-day-grid-event.real-event{
+	background-color: #3c8dbc;
+	border: 1px solid #3c8dbc;
+	border-radius: 0;
+    margin-left: 1px;
+    margin-right: 1px;
+}
+
+.fc-day-grid-event.create-event{
+	background-color: #999;
+	border: 1px solid #999;
+	border-radius: 0;
+    margin-left: 1px;
+    margin-right: 1px;
+}
+#createEventModal .more-item {
+	display: none;
+}
+#createEventModal .more-up {
+	display: none;
+}
+#createEventModal .modal-header{
+	padding: 8px;
+}
+#createEventModal .modal-footer,#eventDetailModal .modal-footer{
+	padding: 8px;
+}
+#createEventModal .required{
+	border-color: #dd4b39;
+}
+.datepicker-days .fcEvent{
+	color:green;
+	background-color: #ccc;
+}
+#startTime, #endTime {
+	width: 190px;
+}
+.content-wrapper .content{
+	background-color: white;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}

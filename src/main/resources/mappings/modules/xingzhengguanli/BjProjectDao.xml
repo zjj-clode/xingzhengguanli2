@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudinte.modules.xingzhengguanli.dao.BjProjectDao">
+    
+	<sql id="bjProjectColumns">
+		a.id AS "id",
+		a.user_id AS "user.id",
+		a.first_files AS "firstFiles",
+		a.last_files AS "lastFiles",
+		a.upload_date AS "uploadDate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		u.name AS "user.name"
+	</sql>
+	
+	<sql id="bjProjectJoins">
+		JOIN sys_user u ON u.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="BjProject">
+		SELECT 
+			<include refid="bjProjectColumns"/>
+		FROM bj_project a
+		<include refid="bjProjectJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<sql id="find_bjProject_where">
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="user != null and user.id != null and user.id != ''">
+			AND a.user_id = #{user.id}
+		</if>
+		<if test="beginUploadDate != null and endUploadDate != null ">
+			AND a.upload_date BETWEEN #{beginUploadDate} AND #{endUploadDate}
+		</if>
+	</sql>
+	
+	<select id="findCount" resultType="long">
+		SELECT COUNT(*)
+		FROM bj_project a
+		<include refid="bjProjectJoins"/>
+		<where>
+			<include refid="find_bjProject_where"/>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="BjProject">
+		SELECT 
+			<include refid="bjProjectColumns"/>
+		FROM bj_project a
+		<include refid="bjProjectJoins"/>
+		<where>
+			<include refid="find_bjProject_where"/>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BjProject">
+		SELECT 
+			<include refid="bjProjectColumns"/>
+		FROM bj_project a
+		<include refid="bjProjectJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO bj_project(
+			id,
+			user_id,
+			first_files,
+			last_files,
+			upload_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{user.id},
+			#{firstFiles},
+			#{lastFiles},
+			#{uploadDate},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	
+	  <insert id ="batchInsert" parameterType="java.util.List">
+		INSERT INTO bj_project(
+			id,
+			user_id,
+			first_files,
+			last_files,
+			upload_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES 
+		   <foreach collection="list" item="item" index="index" separator =",">
+       
+		(
+			#{item.id},
+			#{item.user.id},
+			#{item.firstFiles},
+			#{item.lastFiles},
+			#{item.uploadDate},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+	</insert>
+	
+	<insert id ="batchInsertUpdate" parameterType="java.util.List">
+		INSERT INTO bj_project(
+			id,
+			user_id,
+			first_files,
+			last_files,
+			upload_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator =",">
+        (
+			#{item.id},
+			#{item.user.id},
+			#{item.firstFiles},
+			#{item.lastFiles},
+			#{item.uploadDate},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+			user_id = values(user_id),
+			first_files = values(first_files),
+			last_files = values(last_files),
+			upload_date = values(upload_date),
+			update_by = values(update_by),
+			update_date = values(update_date),
+			remarks = values(remarks)
+		
+	</insert>
+	
+ <update id ="batchUpdate" parameterType="java.util.List" >
+      <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+		UPDATE bj_project SET 	
+			user_id = #{item.user.id},
+			first_files = #{item.firstFiles},
+			last_files = #{item.lastFiles},
+			upload_date = #{item.uploadDate},
+			update_by = #{item.updateBy.id},
+			update_date = #{item.updateDate},
+			remarks = #{item.remarks}
+		WHERE id = #{item.id}
+		</foreach>
+	</update>
+	
+	<update id="update">
+		UPDATE bj_project SET 	
+       			user_id = #{user.id},
+			first_files = #{firstFiles},
+			last_files = #{lastFiles},
+			upload_date = #{uploadDate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 禁用 -->
+	<update id="disable">
+		UPDATE bj_project SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete">
+		DELETE FROM bj_project WHERE id = #{id}
+	</delete>
+	
+	<!-- 批量删除 ,参数为String类型id数组，如   String[] ids ，url: ids=1&ids=2&ids=3 或 ids=1,2,3 -->
+	<delete id="deleteByIds1" parameterType="String">
+		DELETE FROM bj_project WHERE id IN
+		<foreach collection="array" item="item" open=" (" close=") " separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	
+	<delete id="deleteByIds" parameterType="BjProject">
+		DELETE FROM bj_project WHERE id IN
+		<foreach collection="ids" item="id" open=" (" close=") " separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+</mapper>

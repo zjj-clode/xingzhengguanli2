@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudinte.modules.xingzhengguanli.dao.EducationPerformanceIndicatorsDao">
+    
+	<sql id="educationPerformanceIndicatorsColumns">
+		a.id AS "id",
+		a.first_target AS "firstTarget",
+		a.first_target_name AS "firstTargetName",
+		a.target_type AS "targetType",
+		a.second_target_name AS "secondTargetName",
+		a.third_target_name AS "thirdTargetName",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.sort AS "sort"
+	</sql>
+	
+	<sql id="educationPerformanceIndicatorsJoins">
+	</sql>
+    
+	<select id="get" resultType="EducationPerformanceIndicators">
+		SELECT 
+			<include refid="educationPerformanceIndicatorsColumns"/>
+		FROM education_performance_indicators a
+		<include refid="educationPerformanceIndicatorsJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<sql id="find_educationPerformanceIndicators_where">
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="firstTarget != null and firstTarget != ''">
+			AND a.first_target = #{firstTarget}
+		</if>
+		<if test="targetType != null and targetType != ''">
+			AND a.target_type = #{targetType}
+		</if>
+	</sql>
+	
+	<select id="findCount" resultType="long">
+		SELECT COUNT(*)
+		FROM education_performance_indicators a
+		<include refid="educationPerformanceIndicatorsJoins"/>
+		<where>
+			<include refid="find_educationPerformanceIndicators_where"/>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="EducationPerformanceIndicators">
+		SELECT 
+			<include refid="educationPerformanceIndicatorsColumns"/>
+		FROM education_performance_indicators a
+		<include refid="educationPerformanceIndicatorsJoins"/>
+		<where>
+			<include refid="find_educationPerformanceIndicators_where"/>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.sort ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="EducationPerformanceIndicators">
+		SELECT 
+			<include refid="educationPerformanceIndicatorsColumns"/>
+		FROM education_performance_indicators a
+		<include refid="educationPerformanceIndicatorsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO education_performance_indicators(
+			id,
+			first_target,
+			first_target_name,
+			target_type,
+			second_target_name,
+			third_target_name,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			sort
+		) VALUES (
+			#{id},
+			#{firstTarget},
+			#{firstTargetName},
+			#{targetType},
+			#{secondTargetName},
+			#{thirdTargetName},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{sort}
+		)
+	</insert>
+	
+	
+	  <insert id ="batchInsert" parameterType="java.util.List">
+		INSERT INTO education_performance_indicators(
+			id,
+			first_target,
+			first_target_name,
+			target_type,
+			second_target_name,
+			third_target_name,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			sort
+		) VALUES 
+		   <foreach collection="list" item="item" index="index" separator =",">
+       
+		(
+			#{item.id},
+			#{item.firstTarget},
+			#{item.firstTargetName},
+			#{item.targetType},
+			#{item.secondTargetName},
+			#{item.thirdTargetName},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag},
+			#{item.sort}
+		)
+		</foreach>
+	</insert>
+	
+	<insert id ="batchInsertUpdate" parameterType="java.util.List">
+		INSERT INTO education_performance_indicators(
+			id,
+			first_target,
+			first_target_name,
+			target_type,
+			second_target_name,
+			third_target_name,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			sort
+		)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator =",">
+        (
+			#{item.id},
+			#{item.firstTarget},
+			#{item.firstTargetName},
+			#{item.targetType},
+			#{item.secondTargetName},
+			#{item.thirdTargetName},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag},
+			#{item.sort}
+		)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+			first_target = values(first_target),
+			first_target_name = values(first_target_name),
+			target_type = values(target_type),
+			second_target_name = values(second_target_name),
+			third_target_name = values(third_target_name),
+			update_by = values(update_by),
+			update_date = values(update_date),
+			remarks = values(remarks),
+			sort = values(sort)
+		
+	</insert>
+	
+ <update id ="batchUpdate" parameterType="java.util.List" >
+      <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+		UPDATE education_performance_indicators SET 	
+			first_target = #{item.firstTarget},
+			first_target_name = #{item.firstTargetName},
+			target_type = #{item.targetType},
+			second_target_name = #{item.secondTargetName},
+			third_target_name = #{item.thirdTargetName},
+			update_by = #{item.updateBy.id},
+			update_date = #{item.updateDate},
+			remarks = #{item.remarks},
+			sort = #{item.sort}
+		WHERE id = #{item.id}
+		</foreach>
+	</update>
+	
+	<update id="update">
+		UPDATE education_performance_indicators SET 	
+       			first_target = #{firstTarget},
+			first_target_name = #{firstTargetName},
+			target_type = #{targetType},
+			second_target_name = #{secondTargetName},
+			third_target_name = #{thirdTargetName},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			sort = #{sort}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 禁用 -->
+	<update id="disable">
+		UPDATE education_performance_indicators SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete">
+		DELETE FROM education_performance_indicators WHERE id = #{id}
+	</delete>
+	
+	<!-- 批量删除 ,参数为String类型id数组，如   String[] ids ，url: ids=1&ids=2&ids=3 或 ids=1,2,3 -->
+	<delete id="deleteByIds1" parameterType="String">
+		DELETE FROM education_performance_indicators WHERE id IN
+		<foreach collection="array" item="item" open=" (" close=") " separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	
+	<delete id="deleteByIds" parameterType="EducationPerformanceIndicators">
+		DELETE FROM education_performance_indicators WHERE id IN
+		<foreach collection="ids" item="id" open=" (" close=") " separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+</mapper>

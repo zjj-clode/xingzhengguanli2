@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudinte.modules.xingzhengguanli.dao.ImportantBigEventDao">
+    
+	<sql id="importantBigEventColumns">
+		a.id AS "id",
+		a.keshi AS "keshi",
+		a.start_date AS "startDate",
+		a.fund_number AS "fundNumber",
+		a.item_name AS "itemName",
+		a.money AS "money",
+		a.meeting_date AS "meetingDate",
+		a.meeing_place AS "meeingPlace",
+		a.meeing_host AS "meeingHost",
+		a.meeing_member AS "meeingMember",
+		a.meeing_note_taker AS "meeingNoteTaker",
+		a.meeing_theme AS "meeingTheme",
+		a.meeing_content AS "meeingContent",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="importantBigEventJoins">
+	</sql>
+    
+	<select id="get" resultType="ImportantBigEvent">
+		SELECT 
+			<include refid="importantBigEventColumns"/>
+		FROM important_big_event a
+		<include refid="importantBigEventJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<sql id="find_importantBigEvent_where">
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="keshi != null and keshi != ''">
+			AND a.keshi LIKE 
+				<if test="dbName == 'oracle'">'%'||#{keshi}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{keshi}+'%'</if>  
+				<if test="dbName == 'mysql'">concat('%',#{keshi},'%')</if>
+		</if>
+		 <if test="meetingStartDate != null and meetingEndDate != null">
+		      AND a.meeting_date between #{meetingStartDate} and #{meetingEndDate}
+		 </if>
+		 <if test="createBy != null and createBy.id != null and createBy.id != ''">
+			AND a.create_by  = #{createBy.id}
+		</if>
+	</sql>
+	
+	<select id="findCount" resultType="long">
+		SELECT COUNT(*)
+		FROM important_big_event a
+		<include refid="importantBigEventJoins"/>
+		<where>
+			<include refid="find_importantBigEvent_where"/>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="ImportantBigEvent">
+		SELECT 
+			<include refid="importantBigEventColumns"/>
+		FROM important_big_event a
+		<include refid="importantBigEventJoins"/>
+		<where>
+			<include refid="find_importantBigEvent_where"/>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.start_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ImportantBigEvent">
+		SELECT 
+			<include refid="importantBigEventColumns"/>
+		FROM important_big_event a
+		<include refid="importantBigEventJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.start_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO important_big_event(
+			id,
+			keshi,
+			start_date,
+			fund_number,
+			item_name,
+			money,
+			meeting_date,
+			meeing_place,
+			meeing_host,
+			meeing_member,
+			meeing_note_taker,
+			meeing_theme,
+			meeing_content,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{keshi},
+			#{startDate},
+			#{fundNumber},
+			#{itemName},
+			#{money},
+			#{meetingDate},
+			#{meeingPlace},
+			#{meeingHost},
+			#{meeingMember},
+			#{meeingNoteTaker},
+			#{meeingTheme},
+			#{meeingContent},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	
+	  <insert id ="batchInsert" parameterType="java.util.List">
+		INSERT INTO important_big_event(
+			id,
+			keshi,
+			start_date,
+			fund_number,
+			item_name,
+			money,
+			meeting_date,
+			meeing_place,
+			meeing_host,
+			meeing_member,
+			meeing_note_taker,
+			meeing_theme,
+			meeing_content,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) 
+		   <foreach collection="list" item="item" index="index" separator =",">
+       
+		VALUES (
+			#{item.id},
+			#{item.keshi},
+			#{item.startDate},
+			#{item.fundNumber},
+			#{item.itemName},
+			#{item.money},
+			#{item.meetingDate},
+			#{item.meeingPlace},
+			#{item.meeingHost},
+			#{item.meeingMember},
+			#{item.meeingNoteTaker},
+			#{item.meeingTheme},
+			#{item.meeingContent},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+	</insert>
+	
+	<insert id ="batchInsertUpdate" parameterType="java.util.List">
+		INSERT INTO important_big_event(
+			id,
+			keshi,
+			start_date,
+			fund_number,
+			item_name,
+			money,
+			meeting_date,
+			meeing_place,
+			meeing_host,
+			meeing_member,
+			meeing_note_taker,
+			meeing_theme,
+			meeing_content,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator =",">
+        (
+			#{item.id},
+			#{item.keshi},
+			#{item.startDate},
+			#{item.fundNumber},
+			#{item.itemName},
+			#{item.money},
+			#{item.meetingDate},
+			#{item.meeingPlace},
+			#{item.meeingHost},
+			#{item.meeingMember},
+			#{item.meeingNoteTaker},
+			#{item.meeingTheme},
+			#{item.meeingContent},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+			keshi = values(keshi),
+			start_date = values(start_date),
+			fund_number = values(fund_number),
+			item_name = values(item_name),
+			money = values(money),
+			meeting_date = values(meeting_date),
+			meeing_place = values(meeing_place),
+			meeing_host = values(meeing_host),
+			meeing_member = values(meeing_member),
+			meeing_note_taker = values(meeing_note_taker),
+			meeing_theme = values(meeing_theme),
+			meeing_content = values(meeing_content),
+			update_by = values(update_by),
+			update_date = values(update_date),
+			remarks = values(remarks)
+		
+	</insert>
+	
+ <update id ="batchUpdate" parameterType="java.util.List" >
+      <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+		UPDATE important_big_event SET 	
+			keshi = #{item.keshi},
+			start_date = #{item.startDate},
+			fund_number = #{item.fundNumber},
+			item_name = #{item.itemName},
+			money = #{item.money},
+			meeting_date = #{item.meetingDate},
+			meeing_place = #{item.meeingPlace},
+			meeing_host = #{item.meeingHost},
+			meeing_member = #{item.meeingMember},
+			meeing_note_taker = #{item.meeingNoteTaker},
+			meeing_theme = #{item.meeingTheme},
+			meeing_content = #{item.meeingContent},
+			update_by = #{item.updateBy.id},
+			update_date = #{item.updateDate},
+			remarks = #{item.remarks}
+		WHERE id = #{id}
+		</foreach>
+	</update>
+	
+	<update id="update">
+		UPDATE important_big_event SET 	
+       			keshi = #{keshi},
+			start_date = #{startDate},
+			fund_number = #{fundNumber},
+			item_name = #{itemName},
+			money = #{money},
+			meeting_date = #{meetingDate},
+			meeing_place = #{meeingPlace},
+			meeing_host = #{meeingHost},
+			meeing_member = #{meeingMember},
+			meeing_note_taker = #{meeingNoteTaker},
+			meeing_theme = #{meeingTheme},
+			meeing_content = #{meeingContent},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 禁用 -->
+	<update id="disable">
+		UPDATE important_big_event SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete">
+		DELETE FROM important_big_event WHERE id = #{id}
+	</delete>
+	
+	<!-- 批量删除 ,参数为String类型id数组，如   String[] ids ，url: ids=1&ids=2&ids=3 或 ids=1,2,3 -->
+	<delete id="deleteByIds1" parameterType="String">
+		DELETE FROM important_big_event WHERE id IN
+		<foreach collection="array" item="item" open=" (" close=") " separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	
+	<delete id="deleteByIds" parameterType="ImportantBigEvent">
+		DELETE FROM important_big_event WHERE id IN
+		<foreach collection="ids" item="id" open=" (" close=") " separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+</mapper>

@@ -1,0 +1,96 @@
+@import "normalize.less";
+@import "fun.less";
+@import "hb.less";
+
+img[class^="icon_"]{
+	display:inline-block;
+	width:100%;
+	cursor:pointer;
+	vertical-align:middle;
+	.select(none);
+}
+i[class^="icon_"]{
+	vertical-align:middle;
+	background-size:100% 100%;
+	display:inline-block;
+	font-style:normal;
+}
+.flexTab{
+	.flexTab;
+}
+.center{
+	.center(c3);
+}
+/**清除浮动，以及第一个孩子的margin-top:,以及最后一个孩子margin-bottom:错乱的问题上下边*/
+.clear{
+	.clearfix();
+}
+/**通用标题字体设置*/
+.f-tit-1{
+	.f(extract(@fs,7),@gray1);
+	.f-state(center,500);
+}
+.f-tit-2{
+	.f(extract(@fs,7),@themeColor);
+	.f-state(center,500);
+}
+
+/**通用文本字体设置*/
+.f-txt-1{
+	.f(@fs-base,@gray1);
+}
+.f-txt-2{
+	.f(@fs-base,@gray2);
+}
+.f-txt-3{
+	.f(@fs-base,@gray3);
+}
+.f-txt-4{
+	.f(@fs-base,@themeColor);
+}
+
+/**提示字体通用样式*/
+.f-tip-tit{
+	.f(@fs-base,@gray3);
+}
+.f-tip-txt{
+	.f(@fs-small,@gray3);
+}
+
+/***/
+.shadow-1{
+	.box-shadow(lighten(@gray3,27%),1px,1px,9px);
+}
+
+.t-r{
+	text-align:right;
+}
+
+/**常用布局*/
+*[class^="g-d"]{
+	.flexTab;
+}
+//2等分布局
+.g-d-2{
+	.grid-de(2);
+}
+//3等分布局
+.g-d-3{
+	.grid-de(3);
+}
+//4等分布局
+.g-d-4{
+	.grid-de(4);
+}
+//5等分布局
+.g-d-5{
+	.grid-de(5);
+}
+/**宽度定义*/
+.wf{
+	.width;
+}
+.w8{
+	width:8rem;
+}
+

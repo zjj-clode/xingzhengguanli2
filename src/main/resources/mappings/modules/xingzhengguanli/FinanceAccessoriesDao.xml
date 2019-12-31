@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudinte.modules.xingzhengguanli.dao.FinanceAccessoriesDao">
+    
+	<sql id="financeAccessoriesColumns">
+		a.id AS "id",
+		a.title AS "title",
+		a.files AS "files",
+		a.is_show AS "isShow",
+		a.download_times AS "downloadTimes",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="financeAccessoriesJoins">
+	</sql>
+    
+	<select id="get" resultType="FinanceAccessories">
+		SELECT 
+			<include refid="financeAccessoriesColumns"/>
+		FROM finance_accessories a
+		<include refid="financeAccessoriesJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<sql id="find_financeAccessories_where">
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="title != null and title != ''">
+			AND a.title LIKE 
+				<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>  
+				<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+		</if>
+		<if test="isShow != null and isShow != ''">
+			AND a.is_show = #{isShow}
+		</if>
+	</sql>
+	
+	<select id="findCount" resultType="long">
+		SELECT COUNT(*)
+		FROM finance_accessories a
+		<include refid="financeAccessoriesJoins"/>
+		<where>
+			<include refid="find_financeAccessories_where"/>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="FinanceAccessories">
+		SELECT 
+			<include refid="financeAccessoriesColumns"/>
+		FROM finance_accessories a
+		<include refid="financeAccessoriesJoins"/>
+		<where>
+			<include refid="find_financeAccessories_where"/>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="FinanceAccessories">
+		SELECT 
+			<include refid="financeAccessoriesColumns"/>
+		FROM finance_accessories a
+		<include refid="financeAccessoriesJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO finance_accessories(
+			id,
+			title,
+			files,
+			is_show,
+			download_times,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{title},
+			#{files},
+			#{isShow},
+			#{downloadTimes},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	
+	  <insert id ="batchInsert" parameterType="java.util.List">
+		INSERT INTO finance_accessories(
+			id,
+			title,
+			files,
+			is_show,
+			download_times,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) 
+		   <foreach collection="list" item="item" index="index" separator =",">
+       
+		VALUES (
+			#{item.id},
+			#{item.title},
+			#{item.files},
+			#{item.isShow},
+			#{item.downloadTimes},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+	</insert>
+	
+	<insert id ="batchInsertUpdate" parameterType="java.util.List">
+		INSERT INTO finance_accessories(
+			id,
+			title,
+			files,
+			is_show,
+			download_times,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator =",">
+        (
+			#{item.id},
+			#{item.title},
+			#{item.files},
+			#{item.isShow},
+			#{item.downloadTimes},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+			title = values(title),
+			files = values(files),
+			is_show = values(is_show),
+			download_times = values(download_times),
+			update_by = values(update_by),
+			update_date = values(update_date),
+			remarks = values(remarks)
+		
+	</insert>
+	
+ <update id ="batchUpdate" parameterType="java.util.List" >
+      <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+		UPDATE finance_accessories SET 	
+			title = #{item.title},
+			files = #{item.files},
+			is_show = #{item.isShow},
+			download_times = #{item.downloadTimes},
+			update_by = #{item.updateBy.id},
+			update_date = #{item.updateDate},
+			remarks = #{item.remarks}
+		WHERE id = #{id}
+		</foreach>
+	</update>
+	
+	<update id="update">
+		UPDATE finance_accessories SET 	
+       			title = #{title},
+			files = #{files},
+			is_show = #{isShow},
+			download_times = #{downloadTimes},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 禁用 -->
+	<update id="disable">
+		UPDATE finance_accessories SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateDownloadTimes">
+		UPDATE finance_accessories SET 	
+			download_times = #{downloadTimes}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete">
+		DELETE FROM finance_accessories WHERE id = #{id}
+	</delete>
+	
+	<!-- 批量删除 ,参数为String类型id数组，如   String[] ids ，url: ids=1&ids=2&ids=3 或 ids=1,2,3 -->
+	<delete id="deleteByIds1" parameterType="String">
+		DELETE FROM finance_accessories WHERE id IN
+		<foreach collection="array" item="item" open=" (" close=") " separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	
+	<delete id="deleteByIds" parameterType="FinanceAccessories">
+		DELETE FROM finance_accessories WHERE id IN
+		<foreach collection="ids" item="id" open=" (" close=") " separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+</mapper>

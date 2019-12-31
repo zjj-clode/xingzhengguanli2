@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.cms.dao.CmsArticleMovieDao">
+    
+	<sql id="cmsArticleMovieColumns">
+		a.id AS "id",
+		a.title AS "title",
+		a.link AS "link"
+	</sql>
+	
+	<sql id="cmsArticleMovieJoins">
+	</sql>
+    
+	<select id="get" resultType="CmsArticleMovie">
+		SELECT 
+			<include refid="cmsArticleMovieColumns"/>
+		FROM cms_article_movie a
+		<include refid="cmsArticleMovieJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<sql id="find_cmsArticleMovie_where">
+		
+		<if test="title != null and title != ''">
+			AND a.title LIKE 
+				<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+		</if>
+	</sql>
+	
+	<select id="findCount" resultType="long">
+		SELECT COUNT(*)
+		FROM cms_article_movie a
+		<include refid="cmsArticleMovieJoins"/>
+		<where>
+			<include refid="find_cmsArticleMovie_where"/>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="CmsArticleMovie">
+		SELECT 
+			<include refid="cmsArticleMovieColumns"/>
+		FROM cms_article_movie a
+		<include refid="cmsArticleMovieJoins"/>
+		<where>
+			<include refid="find_cmsArticleMovie_where"/>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CmsArticleMovie">
+		SELECT 
+			<include refid="cmsArticleMovieColumns"/>
+		FROM cms_article_movie a
+		<include refid="cmsArticleMovieJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cms_article_movie(
+			id,
+			title,
+			link
+		) VALUES (
+			#{id},
+			#{title},
+			#{link}
+		)
+	</insert>
+	
+	
+	  <insert id ="batchInsert" parameterType="java.util.List">
+		INSERT INTO cms_article_movie(
+			id,
+			title,
+			link
+		) 
+		   <foreach collection="list" item="item" index="index" separator =",">
+       
+		VALUES (
+			#{item.id},
+			#{item.title},
+			#{item.link}
+		)
+		</foreach>
+	</insert>
+	
+	<insert id ="batchInsertUpdate" parameterType="java.util.List">
+		INSERT INTO cms_article_movie(
+			id,
+			title,
+			link
+		)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator =",">
+        (
+			#{item.id},
+			#{item.title},
+			#{item.link}
+		)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+			title = values(title),
+			link = values(link)
+		
+	</insert>
+	
+ <update id ="batchUpdate" parameterType="java.util.List" >
+      <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+		UPDATE cms_article_movie SET 	
+			title = #{item.title},
+			link = #{item.link}
+		WHERE id = #{id}
+		</foreach>
+	</update>
+	
+	<update id="update">
+		UPDATE cms_article_movie SET 	
+       			title = #{title},
+			link = #{link}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 禁用 -->
+	<update id="disable">
+		DELETE FROM cms_article_movie
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete">
+		DELETE FROM cms_article_movie WHERE id = #{id}
+	</delete>
+	
+	<!-- 批量删除 ,参数为String类型id数组，如   String[] ids ，url: ids=1&ids=2&ids=3 或 ids=1,2,3 -->
+	<delete id="deleteByIds1" parameterType="String">
+		DELETE FROM cms_article_movie WHERE id IN
+		<foreach collection="array" item="item" open=" (" close=") " separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	
+	<delete id="deleteByIds" parameterType="CmsArticleMovie">
+		DELETE FROM cms_article_movie WHERE id IN
+		<foreach collection="ids" item="id" open=" (" close=") " separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+</mapper>

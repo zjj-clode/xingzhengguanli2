@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd"
+	default-lazy-init="true">
+
+	<description>Shiro Configuration</description>
+
+    <!-- 加载配置属性文件 -->
+	<context:property-placeholder ignore-unresolvable="true" location="classpath:jeesite.properties" />
+	
+	<!-- Shiro权限过滤过滤器定义 -->
+	<bean name="shiroFilterChainDefinitions" class="java.lang.String">
+		<constructor-arg>
+			<value>
+				/static/** = anon
+				/userfiles/** = anon
+				${adminPath}/casLogin = cas
+				${adminPath}/login = authc
+				${adminPath}/logout = logout
+				${adminPath}/loginf = anon
+				${adminPath}/QQlogin = anon
+				${adminPath}/userlog = anon
+				${adminPath}/** = user
+				<!-- pdf在线预览要求登录用户 -->
+				/generic/web/viewer.htm=user
+				/photo/**=user
+				//photo/**=user
+				/act/rest/service/editor/** = perms[act:model:edit]
+				/act/rest/service/model/** = perms[act:model:edit]
+				/act/rest/service/** = user
+				/ReportServer/** = user
+				${frontPath}/collectioninfo/** = authc
+				${frontPath}/applicant/** = authc
+				
+				<!-- 前端的一些表单提交 -->
+				${frontPath}/searchAll = csrf
+				${frontPath}/common/zsCj/** = csrf
+				${frontPath}/lqcxjg = csrf
+				${frontPath}/qa/question/** = csrf
+				${frontPath}/sys/user/** = csrf
+				
+				<!-- POST分页 http://localhost/zhaosheng/f/list-3148a5449c78447ca7dd10a728994df9.htm -->
+				${frontPath}/list-*.htm = csrf
+				
+				${frontPath}/** = anon
+			</value>
+		</constructor-arg>
+	</bean>
+	
+	<!-- 安全认证过滤器 -->
+	<bean id="shiroFilter" class="com.thinkgem.jeesite.common.filter.MyShiroFilterFactoryBean">
+		<property name="securityManager" ref="securityManager" />
+		<property name="loginUrl" value="${adminPath}/login" />
+		<property name="successUrl" value="${adminPath}?login" />
+		<property name="unauthorizedUrl" value="/unauthorized" />
+		<property name="filters">
+            <map>
+                <entry key="user" value-ref="userFilter" />
+                <entry key="csrf" value-ref="csrfFilter"/>
+                <entry key="cas" value-ref="casFilter"/>
+                <entry key="authc" value-ref="formAuthenticationFilter"/>
+                <entry key="logout" value-ref="logoutFilter"/>
+            </map>
+        </property>
+		<property name="filterChainDefinitions">
+			<ref bean="shiroFilterChainDefinitions"/>
+		</property>
+	</bean>
+	
+	<!-- User Filter -->
+	<bean id="userFilter" class="com.thinkgem.jeesite.modules.sys.security.UserFilter" />
+	
+	<!-- CSRF 攻击过滤器 -->
+	<bean id="csrfFilter" class="com.thinkgem.jeesite.modules.sys.security.csrf.CsrfFilter" />
+	
+	<!-- cas realm -->
+	<bean id="casRealm" class="com.thinkgem.jeesite.modules.sys.security.CasRealm">
+    	<property name="casServerUrlPrefix" value="${cas.server.url}"></property>
+    	<property name="casService" value="${cas.service.url}"></property>
+    	 
+    	<property name="casAddUserService">
+			<bean id="casAddUserService" class="com.thinkgem.jeesite.modules.sys.security.CauCasAddUserService"></bean>
+		</property> 
+		
+		<property name="otherAuthorizingLogics" ref="otherAuthorizingLogics"/>
+  	</bean>
+  	<!-- CAS认证过滤器 -->  
+	<bean id="casFilter" class="com.thinkgem.jeesite.modules.sys.security.CasFilter">
+		<property name="logoutParameterName" value="logoutSessionKey" />
+		<!-- 登录链接 -->
+		<property name="loginUrl" value="${cas.server.url}/login?service=${cas.service.url}" />
+		<!-- 失败时跳转到本地系统登录界面 -->
+		<property name="failureUrl" value="${adminPath}/login"/>
+	</bean>
+  	
+  	<!-- 表单认证过滤器 -->
+	<bean id="formAuthenticationFilter" class="com.thinkgem.jeesite.modules.sys.security.FormAuthenticationFilter">
+		<property name="loginUrl" value="${adminPath}/login" />
+	</bean>
+  	
+  	<!-- 指定退出后的重定向地址 -->
+	<bean id="logoutFilter" class="com.thinkgem.jeesite.modules.sys.security.LogoutFilter">
+		<!-- 根据不同的用户类型，跳转到不同的页面 -->
+		<property name="userTypeRedirectUrlMap" ref="userTypeLogoutRedirectUrlMap" />
+		
+		<!-- 退出后跳转到cas系统登录界面（会同时退出cas登录，集成了cas时才能使用） 
+		<property name="redirectUrl" value="${cas.server.url}/logout?service=${cas.service.url}"/> 
+		-->
+		<!-- 退出后跳转到本地系统登录界面（会同时退出cas登录，集成了cas时才能使用） 
+		<property name="redirectUrl" value="${cas.server.url}/logout?service=${cas.service.loginUrl}"/> 
+		-->
+		
+		<!-- 没有匹配上userTypeRedirectUrlMap时，使用这个 -->
+		<property name="redirectUrl" value="${adminPath}/login"/>
+	</bean>
+  	
+	<!-- 退出登录跳转页面配置，key：用户类型，value：跳转URL -->
+	<util:map id="userTypeLogoutRedirectUrlMap" map-class="java.util.HashMap">
+		<entry key="1" value="${adminPath}/login" /><!-- 系统管理 -->
+		<entry key="2" value="${adminPath}/login" /><!-- 老师 -->
+		<entry key="3" value="${adminPath}/login" /><!-- 考生 -->
+		<entry key="4" value="${adminPath}/login" /><!-- 家长 -->
+		<entry key="5" value="${adminPath}/login" /><!-- 中学老师 -->
+		<entry key="6" value="${adminPath}/login" /><!-- 科室  -->
+	</util:map>
+	
+	<!-- 登录成功跳转页面配置，key：用户类型，value：跳转URL 
+		  不管通过什么方式登录，都是先跳转到默认的地址${adminPath}?login，然后在LoginController里统一根据userTypeLoginSuccessUrlMap跳转到不同的页面
+	-->
+	<util:map id="userTypeLoginSuccessUrlMap" map-class="java.util.HashMap">
+		<entry key="1" value="${adminPath}/home" /><!-- 系统管理 -->
+		<entry key="2" value="${adminPath}/home" /><!-- 老师 -->
+		<entry key="3" value="${adminPath}/home" /><!-- 考生 -->
+		<entry key="4" value="${adminPath}/home" /><!-- 家长 -->
+		<entry key="5" value="${adminPath}/home" /><!-- 中学老师 -->
+		<entry key="6" value="${adminPath}/home" /><!-- 科室 -->
+	</util:map>
+	
+	<!-- 认证 realm -->
+	<util:list id="realms" list-class="java.util.ArrayList">
+		<ref bean="systemAuthorizingRealm" />
+		<ref bean="casRealm" />
+	</util:list>
+	
+	<!-- 认证 -->
+	<bean id="authenticator" class="com.thinkgem.jeesite.modules.sys.security.MyModularRealmAuthenticator">
+		<!-- 多realm，不同的realm负责不同的token认证 -->
+		<property name="realms" ref="realms" />
+	</bean>
+	
+	<!-- 授权 -->
+	<bean id="authorizer" class="com.thinkgem.jeesite.modules.sys.security.MyModularRealmAuthorizer">
+		<!-- 多realm，不同的realm负责不同的token授权 -->
+		<property name="realms" ref="realms" />
+	</bean>
+	
+	<!-- 定义Shiro安全管理配置 -->
+	<bean id="securityManager" class="com.thinkgem.jeesite.common.security.shiro.web.mgt.SecurityManager">
+		<!-- 多realm，不同的realm负责不同的token认证。此处不能省，授权时也会用到realms -->
+		<property name="realms" ref="realms" />
+		<property name="sessionManager" ref="sessionManager" />
+		<property name="cacheManager" ref="shiroCacheManager" />
+		<property name="authenticator" ref="authenticator" />
+		<property name="authorizer" ref="authorizer" />
+	</bean>
+	
+	<bean id="systemAuthorizingRealm" class="com.thinkgem.jeesite.modules.sys.security.SystemAuthorizingRealm">
+		<property name="credentialsMatcher" ref="credentialsMatcher" />
+		<property name="otherAuthorizingLogics" ref="otherAuthorizingLogics"/>
+	</bean>
+	
+	<util:list id="otherAuthorizingLogics" list-class="java.util.ArrayList">
+		<!-- 不需要注释掉就行 
+		<ref bean="checkLoginUserIpAndRole"/> 
+		-->
+	</util:list>
+	
+	<bean id="checkLoginUserIpAndRole" class="com.thinkgem.jeesite.modules.sys.security.CheckLoginUserIpAndRole">
+		<!-- 在系统运行参数里面进行配置
+		<property name="aclList">
+			<list>
+				<value>permit 192.168.0.115</value>
+				<value>permit 192.168.0.168</value>
+				<value>deny *</value>
+			</list>
+		</property>
+		<property name="roles">
+			<set>
+				<value>administrator</value>
+				<value>zhongxin</value>
+				<value>corporauser</value>
+			</set>
+		</property>
+		<property name="timeRangeStrList">
+			<list>
+				<value>20180808000000-20180809000000</value>
+				<value>20190901000000-20190930000000</value>
+			</list>
+		</property> 
+		-->
+	</bean>
+	
+	
+	<!-- credentialsMatcher使用盐不能在此处设置，由doGetAuthenticationInfo返回值AuthenticationInfo决定 -->
+	<!-- 简单密码加密规则：MD5、循环加密1次
+	<bean id="credentialsMatcher" class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+		<property name="hashAlgorithmName" value="MD5" />
+		<property name="hashIterations" value="1" />
+	</bean>
+	-->
+	<!-- 跟SystemService相同的密码验证规则 : SHA-1 、循环加密1024次 -->
+	<bean id="credentialsMatcher" class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+		<property name="hashAlgorithmName" value="SHA-1" />
+		<property name="hashIterations" value="1024" />
+	</bean>
+	<!-- 跟SystemService相同的密码验证规则 : SHA-1 、循环加密1024次
+	<bean id="credentialsMatcher" class="com.thinkgem.jeesite.modules.sys.security.SimpleCredentialsMatcher"/>
+	-->
+	
+	
+	<!-- 自定义会话管理配置 -->
+	<bean id="sessionManager" class="com.thinkgem.jeesite.common.security.shiro.session.SessionManager">
+		<property name="sessionDAO" ref="sessionDAO" />
+		<!-- 会话超时时间，单位：毫秒 -->
+		<property name="globalSessionTimeout" value="${session.sessionTimeout}" />
+
+		<!-- 定时清理失效会话, 清理用户直接关闭浏览器造成的孤立会话 -->
+		<property name="sessionValidationInterval" value="${session.sessionTimeoutClean}" />
+		<property name="sessionValidationSchedulerEnabled" value="true" />
+		
+		<property name="sessionIdCookieEnabled" value="true" />
+		<property name="sessionIdCookie" ref="sessionIdCookie" />
+
+		<property name="sessionListeners">
+			<list>
+				<!-- 自定义com.thinkgem.jeesite.modules.sys.listener.SessionListener -->
+				<ref bean="sessionListener" />
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 指定本系统SESSIONID, 默认为: JSESSIONID 问题: 与SERVLET容器名冲突, 如JETTY, TOMCAT 等默认JSESSIONID, 当跳出SHIRO SERVLET时如ERROR-PAGE容器会为JSESSIONID重新分配值导致登录会话丢失! -->
+	<bean id="sessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+		<constructor-arg name="name" value="zhaoshengxc.${custmor.code}.session.id" />
+		<property name="httpOnly" value="true"/>
+		<!-- 服务器使用 HTTPS 的时候才能放开 
+		<property name="secure" value="true"/>
+		-->
+	</bean>
+
+	<!-- 自定义Session存储容器 --> 
+	<bean id="sessionDAO" class="com.thinkgem.jeesite.common.security.shiro.session.CacheSessionDAO">
+		<property name="sessionIdGenerator" ref="idGen" />
+		<property name="activeSessionsCacheName" value="activeSessionsCache" />
+		<property name="cacheManager" ref="shiroCacheManager" />
+	</bean>
+	
+	<!-- 定义授权缓存管理器 -->
+	<bean id="shiroCacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+		<property name="cacheManager" ref="cacheManager"/>
+	</bean>
+	
+	<!-- 保证实现了Shiro内部lifecycle函数的bean执行 -->
+	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+	
+	<!-- AOP式方法级权限检查  -->
+	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor">
+		<property name="proxyTargetClass" value="true" />
+	</bean>
+	<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+    	<property name="securityManager" ref="securityManager"/>
+	</bean>
+	
+</beans>

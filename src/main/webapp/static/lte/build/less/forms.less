@@ -1,0 +1,207 @@
+/*
+ * Component: Form
+ * ---------------
+ */
+ @input-radius:3px;
+.form-control {
+  .border-radius(@input-radius);
+  box-shadow: none;
+  border-color: @gray;
+  &:focus {
+    border-color: @light-blue;
+    box-shadow: none;
+  }
+  &::-moz-placeholder,
+  &:-ms-input-placeholder,
+  &::-webkit-input-placeholder {
+    color: #bbb;
+    opacity: 1;
+  }
+
+  &:not(select) {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+}
+
+.form-group {
+  &.has-success {
+    label {
+      color: @green;
+    }
+    .form-control,
+    .input-group-addon {
+      border-color: @green;
+      box-shadow: none;
+    }
+    .help-block {
+      color: @green;
+    }
+  }
+
+  &.has-warning {
+    label {
+      color: @yellow;
+    }
+    .form-control,
+    .input-group-addon {
+      border-color: @yellow;
+      box-shadow: none;
+    }
+    .help-block {
+      color: @yellow;
+    }
+  }
+
+  &.has-error {
+    label {
+      color: @red;
+    }
+    .form-control,
+    .input-group-addon {
+      border-color: @red;
+      box-shadow: none;
+    }
+    .help-block {
+      color: @red;
+    }
+  }
+}
+
+/* Input group */
+.input-group {
+  .input-group-addon {
+    .border-radius(@input-radius);
+    border-color: @gray;
+    background-color: #fff;
+  }
+}
+
+/* button groups */
+.btn-group-vertical {
+  .btn {
+    &.btn-flat:first-of-type, &.btn-flat:last-of-type {
+      .border-radius(0);
+    }
+  }
+}
+
+.icheck > label {
+  padding-left: 0;
+}
+
+/* support Font Awesome icons in form-control */
+.form-control-feedback.fa {
+  line-height: @input-height-base;
+}
+
+.input-lg + .form-control-feedback.fa,
+.input-group-lg + .form-control-feedback.fa,
+.form-group-lg .form-control + .form-control-feedback.fa {
+  line-height: @input-height-large;
+}
+
+.input-sm + .form-control-feedback.fa,
+.input-group-sm + .form-control-feedback.fa,
+.form-group-sm .form-control + .form-control-feedback.fa {
+  line-height: @input-height-small;
+}
+
+fieldset {
+    background: #fff;
+    border: 1px solid #e6e8e8;
+    border-radius: 5px;
+    margin: 20px 0;
+    padding: 25px;
+    position: relative;
+    legend{
+      background: inherit;
+      color: @light-blue;
+      font-size: 15px;
+      left: 10px;
+      padding: 0 10px;
+      position: absolute;
+      top: -12px;
+      font-weight: 400;
+      width: auto!important;
+      border: none!important;
+    }
+}
+
+ul.steps {
+    display: table;
+    list-style: none;
+    margin: 0 0 20px;
+    padding: 10px 0;
+    position: relative;
+    width: 100%;
+    background: #fff;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+    >li{
+      display: table-cell;
+      text-align: center;
+      width: 1%;
+      &:first-child{
+        >a:before{
+          left: 50%;
+          max-width: 51%;
+        }
+      }
+      &:last-child{
+        >a:before{
+          max-width: 50%;
+          width: 50%;
+        }
+      }
+      >a{
+        .stepNumber{
+          background-color: #fff;
+          border: 5px solid #c8c7cc;
+          border-radius: 100%;
+          color: #666666;
+          display: inline-block;
+          font-size: 15px;
+          height: 40px;
+          line-height: 30px;
+          position: relative;
+          text-align: center;
+          width: 40px;
+          z-index: 2;
+        }
+        .stepDesc{
+          color: #666666;
+          display: block;
+          font-size: 14px;
+          margin-top: 4px;
+          max-width: 100%;
+          table-layout: fixed;
+          text-align: center;
+          word-wrap: break-word;
+          z-index: 104;
+        }
+        &.selected{
+          .stepNumber,&:before{
+            border-color: @blue;
+          }
+          .stepNumber,.stepDesc{
+            color:@blue;
+          }
+        }
+        &:before{
+          border-top: 4px solid #c8c7cc;
+          content: "";
+          display: block;
+          font-size: 0;
+          height: 1px;
+          overflow: hidden;
+          position: relative;
+          top: 21px;
+          width: 100%;
+          z-index: 1;
+        }
+      }
+    }
+}

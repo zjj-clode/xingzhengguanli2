@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.cms.dao.CmsLinkLbtDao">
+    
+	<sql id="cmsLinkLbtColumns">
+		a.id AS "id",
+		a.title AS "title",
+		a.image AS "image",
+		a.href AS "href",
+		a.weight AS "weight",
+		a.weight_date AS "weightDate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="cmsLinkLbtJoins">
+	</sql>
+    
+	<select id="get" resultType="CmsLinkLbt">
+		SELECT 
+			<include refid="cmsLinkLbtColumns"/>
+		FROM cms_link_lbt a
+		<include refid="cmsLinkLbtJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<sql id="find_cmsLinkLbt_where">
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="title != null and title != ''">
+			AND a.title LIKE 
+				<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+		</if>
+	</sql>
+	
+	<select id="findCount" resultType="long">
+		SELECT COUNT(*)
+		FROM cms_link_lbt a
+		<include refid="cmsLinkLbtJoins"/>
+		<where>
+			<include refid="find_cmsLinkLbt_where"/>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="CmsLinkLbt">
+		SELECT 
+			<include refid="cmsLinkLbtColumns"/>
+		FROM cms_link_lbt a
+		<include refid="cmsLinkLbtJoins"/>
+		<where>
+			<include refid="find_cmsLinkLbt_where"/>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.weight DESC,a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CmsLinkLbt">
+		SELECT 
+			<include refid="cmsLinkLbtColumns"/>
+		FROM cms_link_lbt a
+		<include refid="cmsLinkLbtJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cms_link_lbt(
+			id,
+			title,
+			image,
+			href,
+			weight,
+			weight_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{title},
+			#{image},
+			#{href},
+			#{weight},
+			#{weightDate},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	
+	  <insert id ="batchInsert" parameterType="java.util.List">
+		INSERT INTO cms_link_lbt(
+			id,
+			title,
+			image,
+			href,
+			weight,
+			weight_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) 
+		   <foreach collection="list" item="item" index="index" separator =",">
+       
+		VALUES (
+			#{item.id},
+			#{item.title},
+			#{item.image},
+			#{item.href},
+			#{item.weight},
+			#{item.weightDate},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+	</insert>
+	
+	<insert id ="batchInsertUpdate" parameterType="java.util.List">
+		INSERT INTO cms_link_lbt(
+			id,
+			title,
+			image,
+			href,
+			weight,
+			weight_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator =",">
+        (
+			#{item.id},
+			#{item.title},
+			#{item.image},
+			#{item.href},
+			#{item.weight},
+			#{item.weightDate},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+			title = values(title),
+			image = values(image),
+			href = values(href),
+			weight = values(weight),
+			weight_date = values(weight_date),
+			update_by = values(update_by),
+			update_date = values(update_date),
+			remarks = values(remarks)
+		
+	</insert>
+	
+ <update id ="batchUpdate" parameterType="java.util.List" >
+      <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+		UPDATE cms_link_lbt SET 	
+			title = #{item.title},
+			image = #{item.image},
+			href = #{item.href},
+			weight = #{item.weight},
+			weight_date = #{item.weightDate},
+			update_by = #{item.updateBy.id},
+			update_date = #{item.updateDate},
+			remarks = #{item.remarks}
+		WHERE id = #{id}
+		</foreach>
+	</update>
+	
+	<update id="update">
+		UPDATE cms_link_lbt SET 	
+       			title = #{title},
+			image = #{image},
+			href = #{href},
+			weight = #{weight},
+			weight_date = #{weightDate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 禁用 -->
+	<update id="disable">
+		UPDATE cms_link_lbt SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete">
+		DELETE FROM cms_link_lbt WHERE id = #{id}
+	</delete>
+	
+	<!-- 批量删除 ,参数为String类型id数组，如   String[] ids ，url: ids=1&ids=2&ids=3 或 ids=1,2,3 -->
+	<delete id="deleteByIds1" parameterType="String">
+		DELETE FROM cms_link_lbt WHERE id IN
+		<foreach collection="array" item="item" open=" (" close=") " separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	
+	<delete id="deleteByIds" parameterType="CmsLinkLbt">
+		DELETE FROM cms_link_lbt WHERE id IN
+		<foreach collection="ids" item="id" open=" (" close=") " separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+	
+	<update id="updateExpiredWeight">
+		update cms_link SET
+			 weight=0
+		WHERE weight &gt; 0 AND weight_date &lt; 
+			<if test="dbName == 'oracle'">sysdate</if>
+			<if test="dbName == 'mysql'">CURDATE()</if>
+	</update>
+</mapper>

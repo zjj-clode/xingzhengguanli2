@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.cms.dao.CmsImageDao">
+    
+	<sql id="cmsImageColumns">
+		a.id AS "id",
+		a.title AS "title",
+		a.image AS "image",
+		a.href AS "href",
+		a.weight AS "weight",
+		a.weight_date AS "weightDate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="cmsImageJoins">
+	</sql>
+    
+	<select id="get" resultType="CmsImage">
+		SELECT 
+			<include refid="cmsImageColumns"/>
+		FROM cms_image a
+		<include refid="cmsImageJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<sql id="find_cmsImage_where">
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="title != null and title != ''">
+			AND a.title LIKE 
+				<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>  
+				<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+		</if>
+	</sql>
+	
+	<select id="findCount" resultType="long">
+		SELECT COUNT(*)
+		FROM cms_image a
+		<include refid="cmsImageJoins"/>
+		<where>
+			<include refid="find_cmsImage_where"/>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="CmsImage">
+		SELECT 
+			<include refid="cmsImageColumns"/>
+		FROM cms_image a
+		<include refid="cmsImageJoins"/>
+		<where>
+			<include refid="find_cmsImage_where"/>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CmsImage">
+		SELECT 
+			<include refid="cmsImageColumns"/>
+		FROM cms_image a
+		<include refid="cmsImageJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cms_image(
+			id,
+			title,
+			image,
+			href,
+			weight,
+			weight_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{title},
+			#{image},
+			#{href},
+			#{weight},
+			#{weightDate},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	
+	  <insert id ="batchInsert" parameterType="java.util.List">
+		INSERT INTO cms_image(
+			id,
+			title,
+			image,
+			href,
+			weight,
+			weight_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) 
+		   <foreach collection="list" item="item" index="index" separator =",">
+       
+		VALUES (
+			#{item.id},
+			#{item.title},
+			#{item.image},
+			#{item.href},
+			#{item.weight},
+			#{item.weightDate},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+	</insert>
+	
+	<insert id ="batchInsertUpdate" parameterType="java.util.List">
+		INSERT INTO cms_image(
+			id,
+			title,
+			image,
+			href,
+			weight,
+			weight_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator =",">
+        (
+			#{item.id},
+			#{item.title},
+			#{item.image},
+			#{item.href},
+			#{item.weight},
+			#{item.weightDate},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+			title = values(title),
+			image = values(image),
+			href = values(href),
+			weight = values(weight),
+			weight_date = values(weight_date)
+		
+	</insert>
+	
+ <update id ="batchUpdate" parameterType="java.util.List" >
+      <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+		UPDATE cms_image SET 	
+			title = #{item.title},
+			image = #{item.image},
+			href = #{item.href},
+			weight = #{item.weight},
+			weight_date = #{item.weightDate}
+		WHERE id = #{id}
+		</foreach>
+	</update>
+	
+	<update id="update">
+		UPDATE cms_image SET 	
+       			title = #{title},
+			image = #{image},
+			href = #{href},
+			weight = #{weight},
+			weight_date = #{weightDate}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 禁用 -->
+	<update id="disable">
+		UPDATE cms_image SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete">
+		DELETE FROM cms_image WHERE id = #{id}
+	</delete>
+	
+	<!-- 批量删除 ,参数为String类型id数组，如   String[] ids ，url: ids=1&ids=2&ids=3 或 ids=1,2,3 -->
+	<delete id="deleteByIds1" parameterType="String">
+		DELETE FROM cms_image WHERE id IN
+		<foreach collection="array" item="item" open=" (" close=") " separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	
+	<delete id="deleteByIds" parameterType="CmsImage">
+		DELETE FROM cms_image WHERE id IN
+		<foreach collection="ids" item="id" open=" (" close=") " separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+</mapper>

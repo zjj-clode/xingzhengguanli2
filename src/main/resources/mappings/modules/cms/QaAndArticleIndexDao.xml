@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.cms.dao.QaAndArticleIndexDao">
+    
+	<sql id="qaAndArticleIndexColumns">
+		a.id AS "id",
+		a.index_id As "indexId",
+		a.link AS "link",
+		a.title AS "title",
+		a.content AS "content",
+		a.askpname AS "askpname",
+		a.lu_create_date AS "luCreateDate",
+		a.type AS "type",
+		a.search_from AS "searchFrom",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="qaAndArticleIndexJoins">
+	</sql>
+    
+	<select id="get" resultType="QaAndArticleIndex">
+		SELECT 
+			<include refid="qaAndArticleIndexColumns"/>
+		FROM qa_and_article_index a
+		<include refid="qaAndArticleIndexJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<sql id="find_qaAndArticleIndex_where">
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="title != null and title != ''">
+			AND a.title LIKE 
+				<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+		</if>
+		<if test="beginLuCreateDate != null and endLuCreateDate != null">
+			AND a.lu_create_date BETWEEN #{beginLuCreateDate} AND #{endLuCreateDate}
+		</if>
+		<if test="type != null and type != ''">
+			AND a.type = #{type}
+		</if>
+		<if test="searchFrom != null and searchFrom != ''">
+			AND a.search_from LIKE 
+				<if test="dbName == 'oracle'">'%'||#{searchFrom}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{searchFrom}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{searchFrom},'%')</if>
+		</if>
+	</sql>
+	
+	<select id="findCount" resultType="long">
+		SELECT COUNT(*)
+		FROM qa_and_article_index a
+		<include refid="qaAndArticleIndexJoins"/>
+		<where>
+			<include refid="find_qaAndArticleIndex_where"/>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="QaAndArticleIndex">
+		SELECT 
+			<include refid="qaAndArticleIndexColumns"/>
+		FROM qa_and_article_index a
+		<include refid="qaAndArticleIndexJoins"/>
+		<where>
+			<include refid="find_qaAndArticleIndex_where"/>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="QaAndArticleIndex">
+		SELECT 
+			<include refid="qaAndArticleIndexColumns"/>
+		FROM qa_and_article_index a
+		<include refid="qaAndArticleIndexJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO qa_and_article_index(
+			id,
+			index_id,
+			link,
+			title,
+			content,
+			askpname,
+			lu_create_date,
+			type,
+			search_from,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{indexId},
+			#{link},
+			#{title},
+			#{content},
+			#{askpname},
+			#{luCreateDate},
+			#{type},
+			#{searchFrom},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	
+	  <insert id ="batchInsert" parameterType="java.util.List">
+		INSERT INTO qa_and_article_index(
+			id,
+			index_id,
+			link,
+			title,
+			content,
+			askpname,
+			lu_create_date,
+			type,
+			search_from,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) 
+		   <foreach collection="list" item="item" index="index" separator =",">
+       
+		VALUES (
+			#{item.id},
+			#{item.indexId}
+			#{item.link},
+			#{item.title},
+			#{item.content},
+			#{item.askpname},
+			#{item.luCreateDate},
+			#{item.type},
+			#{item.searchFrom},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+	</insert>
+	
+	<insert id ="batchInsertUpdate" parameterType="java.util.List">
+		INSERT INTO qa_and_article_index(
+			id,
+			index_id,
+			link,
+			title,
+			content,
+			askpname,
+			lu_create_date,
+			type,
+			search_from,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator =",">
+        (
+			#{item.id},
+			#{item.indexId},
+			#{item.link},
+			#{item.title},
+			#{item.content},
+			#{item.askpname},
+			#{item.luCreateDate},
+			#{item.type},
+			#{item.searchFrom},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+			link = values(link),
+			index_id = values(indexId),
+			title = values(title),
+			content = values(content),
+			askpname = values(askpname),
+			lu_create_date = values(lu_create_date),
+			type = values(type),
+			search_from = values(search_from),
+			update_by = values(update_by),
+			update_date = values(update_date),
+			remarks = values(remarks)
+		
+	</insert>
+	
+ <update id ="batchUpdate" parameterType="java.util.List" >
+      <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+		UPDATE qa_and_article_index SET 
+			index_id = #{item.indexId},
+			link = #{item.link},
+			title = #{item.title},
+			content = #{item.content},
+			askpname = #{item.askpname},
+			lu_create_date = #{item.luCreateDate},
+			type = #{item.type},
+			search_from = #{item.searchFrom},
+			update_by = #{item.updateBy.id},
+			update_date = #{item.updateDate},
+			remarks = #{item.remarks}
+		WHERE id = #{id}
+		</foreach>
+	</update>
+	
+	<update id="update">
+		UPDATE qa_and_article_index SET 	
+			index_id = #{indexId},
+       		link = #{link},
+			title = #{title},
+			content = #{content},
+			askpname = #{askpname},
+			lu_create_date = #{luCreateDate},
+			type = #{type},
+			search_from = #{searchFrom},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id} and index_id = #{indexId}
+	</update>
+	
+	<!-- 禁用 -->
+	<update id="disable">
+		UPDATE qa_and_article_index SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete">
+		DELETE FROM qa_and_article_index WHERE id = #{id}
+	</delete>
+	
+	<!-- 批量删除 ,参数为String类型id数组，如   String[] ids ，url: ids=1&ids=2&ids=3 或 ids=1,2,3 -->
+	<delete id="deleteByIds1" parameterType="String">
+		DELETE FROM qa_and_article_index WHERE id IN
+		<foreach collection="array" item="item" open=" (" close=") " separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	
+	<delete id="deleteByIds" parameterType="QaAndArticleIndex">
+		DELETE FROM qa_and_article_index WHERE id IN
+		<foreach collection="ids" item="id" open=" (" close=") " separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<!--
+	<select id="getByIdAndType" resultType="QaAndArticleIndex">
+		SELECT 
+			<include refid="qaAndArticleIndexColumns"/>
+		FROM qa_and_article_index a
+		<include refid="qaAndArticleIndexJoins"/>
+		WHERE 
+		<if test="indexId != null and indexId != ''">
+			a.index_id = #{indexId} and
+		</if>
+		<if test="type != null and type != ''">
+		    a.type = #{type} and
+		 </if>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			  
+	</select>
+	-->
+	<select id="getByIdAndType" resultType="QaAndArticleIndex">
+		SELECT 
+			<include refid="qaAndArticleIndexColumns"/>
+		FROM qa_and_article_index a
+		<include refid="qaAndArticleIndexJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<choose>
+				<when test="indexId != null and indexId != '' and type != null and type != ''">
+					AND a.index_id = #{indexId} AND a.type = #{type}
+				</when>
+				<otherwise>
+					AND 1 = 2 
+				</otherwise>
+			</choose>
+		</where>
+	</select>
+	
+</mapper>

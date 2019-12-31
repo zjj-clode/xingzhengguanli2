@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudinte.modules.xingzhengguanli.dao.EducationProjectExpenditurePlanDao">
+    
+	<sql id="educationProjectExpenditurePlanColumns">
+		a.id AS "id",
+		a.user_id AS "user.id",
+		a.details_id AS "details.id",
+		a.expenditure_money AS "expenditureMoney",
+		a.expenditure_year AS "expenditureYear",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		u2.name AS "user.name",
+		
+		d.expenditure_classification AS "details.expenditureClassification",
+		d.government_classification AS "details.governmentClassification",
+		d.sort AS "details.sort"
+	</sql>
+	
+	<sql id="educationProjectExpenditurePlanJoins">
+		JOIN sys_user u2 ON u2.id = a.user_id 
+		JOIN education_project_expenditure_details d ON d.id = a.details_id
+	</sql>
+    
+	<select id="get" resultType="EducationProjectExpenditurePlan">
+		SELECT 
+			<include refid="educationProjectExpenditurePlanColumns"/>
+		FROM education_project_expenditure_plan a
+		<include refid="educationProjectExpenditurePlanJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<sql id="find_educationProjectExpenditurePlan_where">
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="user != null and user.id != null and user.id != ''">
+			AND a.user_id = #{user.id}
+		</if>
+		<if test="details != null and details.id != null and details.id != ''">
+			AND a.details_id = #{details.id}
+		</if>
+		<if test="expenditureYear != null and expenditureYear != ''">
+			AND a.expenditure_year = #{expenditureYear}
+		</if>
+	</sql>
+	
+	<select id="findCount" resultType="long">
+		SELECT COUNT(*)
+		FROM education_project_expenditure_plan a
+		<include refid="educationProjectExpenditurePlanJoins"/>
+		<where>
+			<include refid="find_educationProjectExpenditurePlan_where"/>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="EducationProjectExpenditurePlan">
+		SELECT 
+			<include refid="educationProjectExpenditurePlanColumns"/>
+		FROM education_project_expenditure_plan a
+		<include refid="educationProjectExpenditurePlanJoins"/>
+		<where>
+			<include refid="find_educationProjectExpenditurePlan_where"/>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="EducationProjectExpenditurePlan">
+		SELECT 
+			<include refid="educationProjectExpenditurePlanColumns"/>
+		FROM education_project_expenditure_plan a
+		<include refid="educationProjectExpenditurePlanJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findExpenditurePlanList" resultType="ExportExpenditurePlan">
+		
+		SELECT 
+		  t3.sort,
+		  t3.expenditureYear,
+		  t3.expenditureClassification,
+		  t3.allMoney,
+		  t3.governmentClassification
+		FROM
+		(
+			(SELECT 
+				0 AS "sort",
+				t1.expenditure_year AS "expenditureYear",
+				"合计" AS "expenditureClassification",
+				t1.allMoney AS "allMoney",
+				"" AS "governmentClassification" 
+			FROM 
+				(SELECT 
+					a.expenditure_year,
+					SUM(a.expenditure_money) AS "allMoney" 
+				FROM education_project_expenditure_plan a 
+				<where>
+					<include refid="find_educationProjectExpenditurePlan_where"/>
+				</where>
+				GROUP BY a.expenditure_year) t1 
+			)
+			
+			UNION 
+			
+			(SELECT 
+			d.sort AS "sort",
+			t2.expenditure_year AS "expenditureYear",
+			d.expenditure_classification AS "expenditureClassification",
+			t2.allMoney AS "allMoney",
+			d.government_classification AS "governmentClassification" 
+			FROM 
+			    education_project_expenditure_details d 
+			    LEFT JOIN 
+				(SELECT a.expenditure_year,
+						a.details_id,
+						SUM(a.expenditure_money) AS "allMoney"
+				FROM education_project_expenditure_plan a 
+				<where>
+					<include refid="find_educationProjectExpenditurePlan_where"/>
+				</where>
+				GROUP BY a.expenditure_year,a.details_id) t2 
+			 ON t2.details_id = d.id 
+			 ) 
+		 ) t3 
+		ORDER BY t3.sort ASC
+
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO education_project_expenditure_plan(
+			id,
+			user_id,
+			details_id,
+			expenditure_money,
+			expenditure_year,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{user.id},
+			#{details.id},
+			#{expenditureMoney},
+			#{expenditureYear},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	
+	  <insert id ="batchInsert" parameterType="java.util.List">
+		INSERT INTO education_project_expenditure_plan(
+			id,
+			user_id,
+			details_id,
+			expenditure_money,
+			expenditure_year,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES 
+		   <foreach collection="list" item="item" index="index" separator =",">
+       
+		(
+			#{item.id},
+			#{item.user.id},
+			#{item.details.id},
+			#{item.expenditureMoney},
+			#{item.expenditureYear},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+	</insert>
+	
+	<insert id ="batchInsertUpdate" parameterType="java.util.List">
+		INSERT INTO education_project_expenditure_plan(
+			id,
+			user_id,
+			details_id,
+			expenditure_money,
+			expenditure_year,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator =",">
+        (
+			#{item.id},
+			#{item.user.id},
+			#{item.details.id},
+			#{item.expenditureMoney},
+			#{item.expenditureYear},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+			user_id = values(user_id),
+			details_id = values(details_id),
+			expenditure_money = values(expenditure_money),
+			expenditure_year = values(expenditure_year),
+			update_by = values(update_by),
+			update_date = values(update_date),
+			remarks = values(remarks)
+		
+	</insert>
+	
+ <update id ="batchUpdate" parameterType="java.util.List" >
+      <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+		UPDATE education_project_expenditure_plan SET 	
+			user_id = #{item.user.id},
+			details_id = #{item.details.id},
+			expenditure_money = #{item.expenditureMoney},
+			expenditure_year = #{item.expenditureYear},
+			update_by = #{item.updateBy.id},
+			update_date = #{item.updateDate},
+			remarks = #{item.remarks}
+		WHERE id = #{item.id}
+		</foreach>
+	</update>
+	
+	<update id="update">
+		UPDATE education_project_expenditure_plan SET 	
+       			user_id = #{user.id},
+			details_id = #{details.id},
+			expenditure_money = #{expenditureMoney},
+			expenditure_year = #{expenditureYear},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 禁用 -->
+	<update id="disable">
+		UPDATE education_project_expenditure_plan SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete">
+		DELETE FROM education_project_expenditure_plan WHERE id = #{id}
+	</delete>
+	
+	<!-- 批量删除 ,参数为String类型id数组，如   String[] ids ，url: ids=1&ids=2&ids=3 或 ids=1,2,3 -->
+	<delete id="deleteByIds1" parameterType="String">
+		DELETE FROM education_project_expenditure_plan WHERE id IN
+		<foreach collection="array" item="item" open=" (" close=") " separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	
+	<delete id="deleteByIds" parameterType="EducationProjectExpenditurePlan">
+		DELETE FROM education_project_expenditure_plan WHERE id IN
+		<foreach collection="ids" item="id" open=" (" close=") " separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+</mapper>

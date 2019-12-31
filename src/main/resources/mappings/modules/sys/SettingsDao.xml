@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.SettingsDao">
+     
+    <sql id="settingsColumns">
+	    id, 
+		name, 
+		key_ AS "key", 
+		value, 
+		data_type AS "dataType", 
+		system_defined AS "systemDefined", 
+		create_by AS "createBy.id", 
+		create_date AS "createDate", 
+		update_by AS "updateBy.id", 
+		update_date AS "updateDate", 
+		remarks, 
+		del_flag AS "delFlag"
+    </sql>
+    
+    <sql id="settingsJoins">
+	</sql>
+    
+	<select id="get" resultType="Settings">
+		SELECT 
+			<include refid="settingsColumns"/> 
+		FROM sys_settings 
+		<include refid="settingsJoins"/>
+		WHERE id = #{id}
+	</select>
+	
+	<select id="getByKey" resultType="Settings">
+		SELECT 
+			<include refid="settingsColumns"/> 
+		FROM sys_settings 
+		<include refid="settingsJoins"/>
+		WHERE key_ = #{key}
+	</select>
+	
+	<sql id="find_settings_where">
+		<if test="delFlag != null and delFlag != ''">
+			AND a.del_flag = #{delFlag}
+		</if>
+		<if test="dataType != null and dataType != ''">
+			AND a.data_type = #{dataType}
+		</if>
+		
+		<if test="systemDefined != null and systemDefined != ''">
+			AND a.system_defined = #{systemDefined}
+		</if>
+		<if test="createBy != null">
+			<if test="createBy.id != null and createBy.id != ''">
+				AND a.create_by = #{createBy.id}
+			</if>
+		</if>
+		
+		<if test="key != null and key != ''">
+			AND a.key_ LIKE 
+				<if test="dbName == 'oracle'">'%'||#{key}||'%'</if>
+				<if test="dbName == 'mysql'">CONCAT('%', #{key}, '%')</if>
+		</if>
+		<if test="name != null and name != ''">
+			AND a.name LIKE 
+				<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+				<if test="dbName == 'mysql'">CONCAT('%', #{name}, '%')</if>
+		</if>
+		<if test="remarks != null and remarks != ''">
+			AND a.remarks LIKE 
+				<if test="dbName == 'oracle'">'%'||#{remarks}||'%'</if>
+				<if test="dbName == 'mysql'">CONCAT('%', #{remarks}, '%')</if>
+		</if>
+	</sql>
+	
+	<select id="findCount" resultType="long">
+		SELECT COUNT(*)
+			FROM sys_settings a
+		<include refid="settingsJoins"/>
+		<where>
+			<include refid="find_settings_where"/>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="Settings">
+		SELECT 
+			<include refid="settingsColumns"/>
+		FROM sys_settings a
+		<include refid="settingsJoins"/>
+		<where>
+			<include refid="find_settings_where"/>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.key_ ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<!-- 
+	<select id="findList" resultType="Settings">
+		SELECT 
+			* 
+		FROM sys_settings 
+		WHERE del_flag = #{DEL_FLAG_NORMAL} 
+		<if test="dataType != null and dataType != ''">
+			AND data_type = #{dataType}
+		</if>
+		<if test="key != null and key != ''">
+			AND key_ LIKE 
+					<if test="dbName == 'oracle'">'%'||#{key}||'%'</if>
+					<if test="dbName == 'mysql'">CONCAT('%', #{key}, '%')</if>
+		</if>
+		<if test="name != null and name != ''">
+			AND name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mysql'">CONCAT('%', #{name}, '%')</if>
+		</if>
+		<if test="remarks != null and remarks != ''">
+			AND remarks LIKE 
+					<if test="dbName == 'oracle'">'%'||#{remarks}||'%'</if>
+					<if test="dbName == 'mysql'">CONCAT('%', #{remarks}, '%')</if>
+		</if>
+		ORDER BY key_ ASC
+	</select> 
+	-->
+	
+	<select id="findAllList" resultType="Settings">
+		SELECT 
+			<include refid="settingsColumns"/> 
+		FROM sys_settings 
+		<include refid="settingsJoins"/>
+		WHERE del_flag = #{DEL_FLAG_NORMAL} 
+		ORDER BY key_ ASC
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_settings(
+			id, 
+			name, 
+			key_, 
+			value, 
+			data_type, 
+			system_defined, 
+			create_by, 
+			create_date, 
+			update_by, 
+			update_date, 
+			remarks, 
+			del_flag
+		) VALUES (
+			#{id}, 
+			#{name}, 
+			#{key}, 
+			#{value}, 
+			#{dataType}, 
+			#{systemDefined}, 
+			#{createBy.id}, 
+			#{createDate}, 
+			#{updateBy.id}, 
+			#{updateDate}, 
+			#{remarks}, 
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_settings SET 
+			key_ = #{key}, 
+			name = #{name}, 
+			value = #{value}, 
+			data_type = #{dataType}, 
+			system_defined = #{systemDefined}, 
+			update_by = #{updateBy.id}, 
+			update_date = #{updateDate}, 
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sys_settings SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateSystemDefined">
+        UPDATE sys_settings SET 
+			system_defined = #{systemDefined}, 
+			update_by = #{updateBy.id}, 
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateValue">
+        UPDATE sys_settings SET 
+			value = #{value}, 
+			update_by = #{updateBy.id}, 
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

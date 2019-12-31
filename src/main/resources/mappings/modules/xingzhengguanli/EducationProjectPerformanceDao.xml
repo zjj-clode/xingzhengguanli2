@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudinte.modules.xingzhengguanli.dao.EducationProjectPerformanceDao">
+    
+	<sql id="educationProjectPerformanceColumns">
+		a.id AS "id",
+		a.user_id AS "user.id",
+		a.year AS "year",
+		a.project_name AS "projectName",
+		a.project_code AS "projectCode",
+		a.project_unit AS "projectUnit",
+		a.project_category AS "projectCategory",
+		a.project_cycle AS "projectCycle",
+		a.metaphase_money AS "metaphaseMoney",
+		a.metaphase_other_money AS "metaphaseOtherMoney",
+		a.metaphase_finance_money AS "metaphaseFinanceMoney",
+		a.short_term_money AS "shortTermMoney",
+		a.short_term_other_money AS "shortTermOtherMoney",
+		a.short_term_finance_money AS "shortTermFinanceMoney",
+		a.short_term_first_target AS "shortTermFirstTarget",
+		a.short_term_first_target_name AS "shortTermFirstTargetName",
+		a.metaphase_content AS "metaphaseContent",
+		a.short_term_content AS "shortTermContent",
+		a.short_term_target_type AS "shortTermTargetType",
+		a.short_term_second_target_name AS "shortTermSecondTargetName",
+		a.short_term_third_target_name AS "shortTermThirdTargetName",
+		a.short_term_target_value AS "shortTermTargetValue",
+		a.metaphase_target_type AS "metaphaseTargetType",
+		a.metaphase_second_target_name AS "metaphaseSecondTargetName",
+		a.metaphase_third_target_name AS "metaphaseThirdTargetName",
+		a.metaphase_target_value AS "metaphaseTargetValue",
+		a.quantity_unit AS "quantityUnit",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		u2.name AS "user.name"
+	</sql>
+	
+	<sql id="educationProjectPerformanceJoins">
+		LEFT JOIN sys_user u2 ON u2.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="EducationProjectPerformance">
+		SELECT 
+			<include refid="educationProjectPerformanceColumns"/>
+		FROM education_project_performance a
+		<include refid="educationProjectPerformanceJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<sql id="find_educationProjectPerformance_where">
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="user != null and user.id != null and user.id != ''">
+			AND a.user_id = #{user.id}
+		</if>
+		<if test="year != null and year != ''">
+			AND a.year = #{year}
+		</if>
+		<if test="projectName != null and projectName != ''">
+			AND a.project_name LIKE 
+				<if test="dbName == 'oracle'">'%'||#{projectName}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{projectName}+'%'</if>  
+				<if test="dbName == 'mysql'">concat('%',#{projectName},'%')</if>
+		</if>
+		<if test="projectUnit != null and projectUnit != ''">
+			AND a.project_unit LIKE 
+				<if test="dbName == 'oracle'">'%'||#{projectUnit}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{projectUnit}+'%'</if>  
+				<if test="dbName == 'mysql'">concat('%',#{projectUnit},'%')</if>
+		</if>
+		<if test="projectCategory != null and projectCategory != ''">
+			AND a.project_category LIKE 
+				<if test="dbName == 'oracle'">'%'||#{projectCategory}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{projectCategory}+'%'</if>  
+				<if test="dbName == 'mysql'">concat('%',#{projectCategory},'%')</if>
+		</if>
+		<if test="projectCycle != null and projectCycle != ''">
+			AND a.project_cycle = #{projectCycle}
+		</if>
+	</sql>
+	
+	<select id="findCount" resultType="long">
+		SELECT COUNT(*)
+		FROM education_project_performance a
+		<include refid="educationProjectPerformanceJoins"/>
+		<where>
+			<include refid="find_educationProjectPerformance_where"/>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="EducationProjectPerformance">
+		SELECT 
+			<include refid="educationProjectPerformanceColumns"/>
+		FROM education_project_performance a
+		<include refid="educationProjectPerformanceJoins"/>
+		<where>
+			<include refid="find_educationProjectPerformance_where"/>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="EducationProjectPerformance">
+		SELECT 
+			<include refid="educationProjectPerformanceColumns"/>
+		FROM education_project_performance a
+		<include refid="educationProjectPerformanceJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO education_project_performance(
+			id,
+			user_id,
+			year,
+			project_name,
+			project_code,
+			project_unit,
+			project_category,
+			project_cycle,
+			metaphase_money,
+			metaphase_other_money,
+			metaphase_finance_money,
+			short_term_money,
+			short_term_other_money,
+			short_term_finance_money,
+			short_term_first_target,
+			short_term_first_target_name,
+			metaphase_content,
+			short_term_content,
+			short_term_target_type,
+			short_term_second_target_name,
+			short_term_third_target_name,
+			short_term_target_value,
+			metaphase_target_type,
+			metaphase_second_target_name,
+			metaphase_third_target_name,
+			metaphase_target_value,
+			quantity_unit,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{user.id},
+			#{year},
+			#{projectName},
+			#{projectCode},
+			#{projectUnit},
+			#{projectCategory},
+			#{projectCycle},
+			#{metaphaseMoney},
+			#{metaphaseOtherMoney},
+			#{metaphaseFinanceMoney},
+			#{shortTermMoney},
+			#{shortTermOtherMoney},
+			#{shortTermFinanceMoney},
+			#{shortTermFirstTarget},
+			#{shortTermFirstTargetName},
+			#{metaphaseContent},
+			#{shortTermContent},
+			#{shortTermTargetType},
+			#{shortTermSecondTargetName},
+			#{shortTermThirdTargetName},
+			#{shortTermTargetValue},
+			#{metaphaseTargetType},
+			#{metaphaseSecondTargetName},
+			#{metaphaseThirdTargetName},
+			#{metaphaseTargetValue},
+			#{quantityUnit},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	
+	  <insert id ="batchInsert" parameterType="java.util.List">
+		INSERT INTO education_project_performance(
+			id,
+			user_id,
+			year,
+			project_name,
+			project_code,
+			project_unit,
+			project_category,
+			project_cycle,
+			metaphase_money,
+			metaphase_other_money,
+			metaphase_finance_money,
+			short_term_money,
+			short_term_other_money,
+			short_term_finance_money,
+			short_term_first_target,
+			short_term_first_target_name,
+			metaphase_content,
+			short_term_content,
+			short_term_target_type,
+			short_term_second_target_name,
+			short_term_third_target_name,
+			short_term_target_value,
+			metaphase_target_type,
+			metaphase_second_target_name,
+			metaphase_third_target_name,
+			metaphase_target_value,
+			quantity_unit,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) 
+		   <foreach collection="list" item="item" index="index" separator =",">
+       
+		VALUES (
+			#{item.id},
+			#{item.user.id},
+			#{item.year},
+			#{item.projectName},
+			#{item.projectCode},
+			#{item.projectUnit},
+			#{item.projectCategory},
+			#{item.projectCycle},
+			#{item.metaphaseMoney},
+			#{item.metaphaseOtherMoney},
+			#{item.metaphaseFinanceMoney},
+			#{item.shortTermMoney},
+			#{item.shortTermOtherMoney},
+			#{item.shortTermFinanceMoney},
+			#{item.shortTermFirstTarget},
+			#{item.shortTermFirstTargetName},
+			#{item.metaphaseContent},
+			#{item.shortTermContent},
+			#{item.shortTermTargetType},
+			#{item.shortTermSecondTargetName},
+			#{item.shortTermThirdTargetName},
+			#{item.shortTermTargetValue},
+			#{item.metaphaseTargetType},
+			#{item.metaphaseSecondTargetName},
+			#{item.metaphaseThirdTargetName},
+			#{item.metaphaseTargetValue},
+			#{item.quantityUnit},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+	</insert>
+	
+	<insert id ="batchInsertUpdate" parameterType="java.util.List">
+		INSERT INTO education_project_performance(
+			id,
+			user_id,
+			year,
+			project_name,
+			project_code,
+			project_unit,
+			project_category,
+			project_cycle,
+			metaphase_money,
+			metaphase_other_money,
+			metaphase_finance_money,
+			short_term_money,
+			short_term_other_money,
+			short_term_finance_money,
+			short_term_first_target,
+			short_term_first_target_name,
+			metaphase_content,
+			short_term_content,
+			short_term_target_type,
+			short_term_second_target_name,
+			short_term_third_target_name,
+			short_term_target_value,
+			metaphase_target_type,
+			metaphase_second_target_name,
+			metaphase_third_target_name,
+			metaphase_target_value,
+			quantity_unit,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator =",">
+        (
+			#{item.id},
+			#{item.user.id},
+			#{item.year},
+			#{item.projectName},
+			#{item.projectCode},
+			#{item.projectUnit},
+			#{item.projectCategory},
+			#{item.projectCycle},
+			#{item.metaphaseMoney},
+			#{item.metaphaseOtherMoney},
+			#{item.metaphaseFinanceMoney},
+			#{item.shortTermMoney},
+			#{item.shortTermOtherMoney},
+			#{item.shortTermFinanceMoney},
+			#{item.shortTermFirstTarget},
+			#{item.shortTermFirstTargetName},
+			#{item.metaphaseContent},
+			#{item.shortTermContent},
+			#{item.shortTermTargetType},
+			#{item.shortTermSecondTargetName},
+			#{item.shortTermThirdTargetName},
+			#{item.shortTermTargetValue},
+			#{item.metaphaseTargetType},
+			#{item.metaphaseSecondTargetName},
+			#{item.metaphaseThirdTargetName},
+			#{item.metaphaseTargetValue},
+			#{item.quantityUnit},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+			user_id = values(user_id),
+			year = values(year),
+			project_name = values(project_name),
+			project_code = values(project_code),
+			project_unit = values(project_unit),
+			project_category = values(project_category),
+			project_cycle = values(project_cycle),
+			metaphase_money = values(metaphase_money),
+			metaphase_other_money = values(metaphase_other_money),
+			metaphase_finance_money = values(metaphase_finance_money),
+			short_term_money = values(short_term_money),
+			short_term_other_money = values(short_term_other_money),
+			short_term_finance_money = values(short_term_finance_money),
+			short_term_first_target = values(short_term_first_target),
+			short_term_first_target_name = values(short_term_first_target_name),
+			metaphase_content = values(metaphase_content),
+			short_term_content = values(short_term_content),
+			short_term_target_type = values(short_term_target_type),
+			short_term_second_target_name = values(short_term_second_target_name),
+			short_term_third_target_name = values(short_term_third_target_name),
+			short_term_target_value = values(short_term_target_value),
+			metaphase_target_type = values(metaphase_target_type),
+			metaphase_second_target_name = values(metaphase_second_target_name),
+			metaphase_third_target_name = values(metaphase_third_target_name),
+			metaphase_target_value = values(metaphase_target_value),
+			quantity_unit = values(quantity_unit),
+			update_by = values(update_by),
+			update_date = values(update_date),
+			remarks = values(remarks)
+		
+	</insert>
+	
+ <update id ="batchUpdate" parameterType="java.util.List" >
+      <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+		UPDATE education_project_performance SET 	
+			user_id = #{item.user.id},
+			year = #{item.year},
+			project_name = #{item.projectName},
+			project_code = #{item.projectCode},
+			project_unit = #{item.projectUnit},
+			project_category = #{item.projectCategory},
+			project_cycle = #{item.projectCycle},
+			metaphase_money = #{item.metaphaseMoney},
+			metaphase_other_money = #{item.metaphaseOtherMoney},
+			metaphase_finance_money = #{item.metaphaseFinanceMoney},
+			short_term_money = #{item.shortTermMoney},
+			short_term_other_money = #{item.shortTermOtherMoney},
+			short_term_finance_money = #{item.shortTermFinanceMoney},
+			short_term_first_target = #{item.shortTermFirstTarget},
+			short_term_first_target_name = #{item.shortTermFirstTargetName},
+			metaphase_content = #{item.metaphaseContent},
+			short_term_content = #{item.shortTermContent},
+			short_term_target_type = #{item.shortTermTargetType},
+			short_term_second_target_name = #{item.shortTermSecondTargetName},
+			short_term_third_target_name = #{item.shortTermThirdTargetName},
+			short_term_target_value = #{item.shortTermTargetValue},
+			metaphase_target_type = #{item.metaphaseTargetType},
+			metaphase_second_target_name = #{item.metaphaseSecondTargetName},
+			metaphase_third_target_name = #{item.metaphaseThirdTargetName},
+			metaphase_target_value = #{item.metaphaseTargetValue},
+			quantity_unit = #{item.quantityUnit},
+			update_by = #{item.updateBy.id},
+			update_date = #{item.updateDate},
+			remarks = #{item.remarks}
+		WHERE id = #{id}
+		</foreach>
+	</update>
+	
+	<update id="update">
+		UPDATE education_project_performance SET 	
+       			user_id = #{user.id},
+			year = #{year},
+			project_name = #{projectName},
+			project_code = #{projectCode},
+			project_unit = #{projectUnit},
+			project_category = #{projectCategory},
+			project_cycle = #{projectCycle},
+			metaphase_money = #{metaphaseMoney},
+			metaphase_other_money = #{metaphaseOtherMoney},
+			metaphase_finance_money = #{metaphaseFinanceMoney},
+			short_term_money = #{shortTermMoney},
+			short_term_other_money = #{shortTermOtherMoney},
+			short_term_finance_money = #{shortTermFinanceMoney},
+			short_term_first_target = #{shortTermFirstTarget},
+			short_term_first_target_name = #{shortTermFirstTargetName},
+			metaphase_content = #{metaphaseContent},
+			short_term_content = #{shortTermContent},
+			short_term_target_type = #{shortTermTargetType},
+			short_term_second_target_name = #{shortTermSecondTargetName},
+			short_term_third_target_name = #{shortTermThirdTargetName},
+			short_term_target_value = #{shortTermTargetValue},
+			metaphase_target_type = #{metaphaseTargetType},
+			metaphase_second_target_name = #{metaphaseSecondTargetName},
+			metaphase_third_target_name = #{metaphaseThirdTargetName},
+			metaphase_target_value = #{metaphaseTargetValue},
+			quantity_unit = #{quantityUnit},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 禁用 -->
+	<update id="disable">
+		UPDATE education_project_performance SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete">
+		DELETE FROM education_project_performance WHERE id = #{id}
+	</delete>
+	
+	<!-- 批量删除 ,参数为String类型id数组，如   String[] ids ，url: ids=1&ids=2&ids=3 或 ids=1,2,3 -->
+	<delete id="deleteByIds1" parameterType="String">
+		DELETE FROM education_project_performance WHERE id IN
+		<foreach collection="array" item="item" open=" (" close=") " separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	
+	<delete id="deleteByIds" parameterType="EducationProjectPerformance">
+		DELETE FROM education_project_performance WHERE id IN
+		<foreach collection="ids" item="id" open=" (" close=") " separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+</mapper>

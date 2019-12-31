@@ -1,0 +1,14 @@
+/*steps*/
+.steps{
+  background:url(../images/img_step.jpg) no-repeat 0 0;
+  padding:70px 0 10px;
+  margin-left:20px;
+}
+.steps li{
+  width:193px;
+  text-align: center;
+}
+.steps li:first-child{
+  margin-left:-66px;
+}
+.fl{float:left}

@@ -1,0 +1,35 @@
+@import "normalize.less";
+@import "fun.less";
+@import "base.less";
+.bar{
+	.padd-t;
+}
+.sche{
+	background-color:#f2f2f2;
+	.s_tit{
+		.f(extract(@fs,6),@themeColor);
+		.f-state;
+		background-color:#fff;
+		height:1.5rem;
+		line-height:1.5rem;
+	}
+	.sec{
+		.padd-t;
+		margin-top:.0625rem;
+		background-color:#fff;
+		overflow-x:auto;
+		.noScroll;
+		.padd-v(.4375rem);
+		.tab{
+			.noWrap;
+			li{
+				display:inline-block;
+				margin-right:.625rem;
+				.f(@fs-base,@gray1);
+			}
+			.active{
+				color:@subColor;
+			}
+		}
+	}
+}

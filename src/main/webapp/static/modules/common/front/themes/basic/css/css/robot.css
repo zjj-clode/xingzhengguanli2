@@ -1,0 +1,189 @@
+body{
+	background: #aaa;
+}
+#wrapper{
+	position: fixed;
+	top:20px;
+	bottom:50px;
+	border-radius: 5px;
+	box-shadow: 0 0 3px #666;
+	background: #fff;
+}
+.small{
+	width: 980px;
+	left:50%;
+	margin-left:-490px;
+}
+.big{
+	width: 100%;
+}
+/*header*/
+.header{
+	background: #4ba9d2;
+	height: 60px;
+	border-radius: 5px 5px 0 0;
+	z-index: 10;
+}
+.header h1{
+	padding:20px 0 0 115px
+}
+.header .robot{
+	bottom:0;
+	left:20px;
+}
+.header .tools{
+	right:0;
+	top:0;
+}
+.header .tools p{
+	width: 60px;
+	padding-top: 15px;
+	height: 45px;
+}
+/*rightPart*/
+.rightPart{
+	width: 300px;
+}
+.rightTab{
+	background: #eee;
+	height: 58px;
+	line-height: 58px;
+	color:#999;
+}
+.rightTab li{
+	width: 100px;
+	cursor:pointer;
+}
+.rightTab li.on{
+	color:#333;
+	background: url(../images/bg_tabon_robot.png) no-repeat center 51px;
+}
+.rightInn{
+	padding:15px;
+}
+.rightInn li{
+	margin-bottom: 10px;
+	padding-left: 13px;
+	background: url(../images/ico_arrow2.png) no-repeat left center;
+}
+.rightInn li a{
+	color:#333;
+}
+.rightInn li a:hover{
+	color:#338ecf;
+	text-decoration: none;
+}
+.rightInn .change{
+	background: #d23929;
+	color:#fff;
+	border-radius: 5px;
+	padding:5px 20px;
+}
+/*chatBody*/
+.chatBody{
+	top:60px;
+	right:300px;
+	left:0;
+	bottom:150px;
+	background: #eee;
+	border-right: 1px solid #ccc;
+	overflow-y:auto;
+}
+.chatInn{
+	padding:25px;
+}
+.chatInn dt{
+	top:0;
+}
+.chatInn a{
+	color:#338ecf;
+}
+.answer dt{
+	left:0;
+}
+.answer dd{
+	padding:4px 0 0 80px;
+}
+.answer .word{
+	border:1px solid #ccc;
+	border-radius:5px;
+	padding:10px 15px;
+	background: #fff;
+}
+.answer .jiao{
+	left:61px;
+	top:8px;
+}
+.ask dt{
+	right:0;
+}
+.ask dd{
+	padding:4px 80px 0 0;
+}
+.ask .word{
+	border-radius:5px;
+	padding:10px 15px;
+	background: #4ba9d2;
+	color:#fff;
+}
+.ask .jiao{
+	right:61px;
+	top:8px;
+}
+/*askBody*/
+.askBody{
+	border-right: 1px solid #ccc;
+	height: 150px;
+	bottom:0;
+	left:0;
+	right:300px;
+	padding:;
+}
+.askInn{
+	padding:20px 25px;
+}
+.askBody textarea{
+	width:100%;
+	height: 75px;
+	border:none;
+	outline: none;
+	resize: none;
+	overflow:auto;
+}
+.askBody .tip{
+	color:red;
+	padding-top:5px;
+}
+/*footer*/
+.footer{
+	position: fixed;
+	height: 50px;
+	line-height: 50px;
+	width: 100%;
+	left:0;
+	bottom:0;
+	color:#fff;
+}
+
+.list_box {
+	position:absolute;
+	bottom:-5px;
+	left:-55px;
+	width:600px;
+	margin-left:80px;
+	background:#f3f3f3;
+	border:1px solid #CCC;
+}
+.keywords_list {
+	margin:0;
+	padding:6px;
+	list-style:none;
+}
+.keywords_list li:hover{
+	z-index:100;
+	background-color:#fff;
+}
+
+.keywords_list li{
+	padding:1px 0 2px;
+}

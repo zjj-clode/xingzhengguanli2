@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudinte.modules.xingzhengguanli.dao.WorkAttendanceDao">
+    
+	<sql id="workAttendanceColumns">
+		a.id AS "id",
+		a.overtime_user AS "overtimeUser.id",
+		a.keshi AS "keshi",
+		a.job_number AS "jobNumber",
+		a.name AS "name",
+		a.overtime_days AS "overtimeDays",
+		a.year_mon AS "yearMon",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="workAttendanceJoins">
+	</sql>
+    
+	<select id="get" resultType="WorkAttendance">
+		SELECT 
+			<include refid="workAttendanceColumns"/>
+		FROM work_attendance a
+		<include refid="workAttendanceJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<sql id="find_workAttendance_where">
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="overtimeUser != null and overtimeUser.id != null and overtimeUser.id != ''">
+			AND a.overtime_user = #{overtimeUser.id}
+		</if>
+		<if test="keshi != null and keshi != ''">
+			AND a.keshi = #{keshi}
+		</if>
+		<if test="jobNumber != null and jobNumber != ''">
+			AND a.job_number = #{jobNumber}
+		</if>
+		<if test="name != null and name != ''">
+			AND a.name LIKE 
+				<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>  
+				<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+		</if>
+		<if test="overtimeDays != null and overtimeDays != ''">
+			AND a.overtime_days = #{overtimeDays}
+		</if>
+		<if test="yearMon != null">
+			AND a.year_mon = #{yearMon}
+		</if>
+		<if test="createBy != null and createBy.id != null and createBy.id != ''">
+			AND a.create_by  = #{createBy.id}
+		</if>
+	</sql>
+	
+	<select id="findCount" resultType="long">
+		SELECT COUNT(*)
+		FROM work_attendance a
+		<include refid="workAttendanceJoins"/>
+		<where>
+			<include refid="find_workAttendance_where"/>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="WorkAttendance">
+		SELECT 
+			<include refid="workAttendanceColumns"/>
+		FROM work_attendance a
+		<include refid="workAttendanceJoins"/>
+		<where>
+			<include refid="find_workAttendance_where"/>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.keshi DESC,a.year_mon DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WorkAttendance">
+		SELECT 
+			<include refid="workAttendanceColumns"/>
+		FROM work_attendance a
+		<include refid="workAttendanceJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO work_attendance(
+			id,
+			overtime_user,
+			keshi,
+			job_number,
+			name,
+			overtime_days,
+			year_mon,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{overtimeUser.id},
+			#{keshi},
+			#{jobNumber},
+			#{name},
+			#{overtimeDays},
+			#{yearMon},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	
+	  <insert id ="batchInsert" parameterType="java.util.List">
+		INSERT INTO work_attendance(
+			id,
+			overtime_user,
+			keshi,
+			job_number,
+			name,
+			overtime_days,
+			year_mon,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES 
+		   <foreach collection="list" item="item" index="index" separator =",">
+       
+		(
+			#{item.id},
+			#{item.overtimeUser.id},
+			#{item.keshi},
+			#{item.jobNumber},
+			#{item.name},
+			#{item.overtimeDays},
+			#{item.yearMon},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+	</insert>
+	
+	<insert id ="batchInsertUpdate" parameterType="java.util.List">
+		INSERT INTO work_attendance(
+			id,
+			overtime_user,
+			keshi,
+			job_number,
+			name,
+			overtime_days,
+			year_mon,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator =",">
+        (
+			#{item.id},
+			#{item.overtimeUser.id},
+			#{item.keshi},
+			#{item.jobNumber},
+			#{item.name},
+			#{item.overtimeDays},
+			#{item.yearMon},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+			overtime_user = values(overtime_user),
+			keshi = values(keshi),
+			job_number = values(job_number),
+			name = values(name),
+			overtime_days = values(overtime_days),
+			year_mon = values(year_mon),
+			update_by = values(update_by),
+			update_date = values(update_date),
+			remarks = values(remarks)
+		
+	</insert>
+	
+ <update id ="batchUpdate" parameterType="java.util.List" >
+      <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+		UPDATE work_attendance SET 	
+			overtime_user = #{item.overtimeUser.id},
+			keshi = #{item.keshi},
+			job_number = #{item.jobNumber},
+			name = #{item.name},
+			overtime_days = #{item.overtimeDays},
+			year_mon = #{item.yearMon},
+			update_by = #{item.updateBy.id},
+			update_date = #{item.updateDate},
+			remarks = #{item.remarks}
+		WHERE id = #{item.id}
+		</foreach>
+	</update>
+	
+	<update id="update">
+		UPDATE work_attendance SET 	
+       			overtime_user = #{overtimeUser.id},
+			keshi = #{keshi},
+			job_number = #{jobNumber},
+			name = #{name},
+			overtime_days = #{overtimeDays},
+			year_mon = #{yearMon},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 禁用 -->
+	<update id="disable">
+		UPDATE work_attendance SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete">
+		DELETE FROM work_attendance WHERE id = #{id}
+	</delete>
+	
+	<!-- 批量删除 ,参数为String类型id数组，如   String[] ids ，url: ids=1&ids=2&ids=3 或 ids=1,2,3 -->
+	<delete id="deleteByIds1" parameterType="String">
+		DELETE FROM work_attendance WHERE id IN
+		<foreach collection="array" item="item" open=" (" close=") " separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	
+	<delete id="deleteByIds" parameterType="WorkAttendance">
+		DELETE FROM work_attendance WHERE id IN
+		<foreach collection="ids" item="id" open=" (" close=") " separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+</mapper>

@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudinte.modules.xingzhengguanli.dao.EducationProjectInfoDao">
+    
+	<sql id="educationProjectInfoColumns">
+		a.id AS "id",
+		a.belong_to_first AS "belongToFirst",
+		a.subject_code AS "subjectCode",
+		a.project_unit AS "projectUnit",
+		a.project_code AS "projectCode",
+		a.project_name AS "projectName",
+		a.project_category AS "projectCategory",
+		a.attribute AS "attribute",
+		a.is_together AS "isTogether",
+		a.plan_year AS "planYear",
+		a.project_cycle AS "projectCycle",
+		a.latest_approval_year AS "latestApprovalYear",
+		a.confidentiality_level AS "confidentialityLevel",
+		a.confidentiality_term_unit AS "confidentialityTermUnit",
+		a.confidentiality_term AS "confidentialityTerm",
+		a.project_leader AS "projectLeader",
+		a.project_post AS "projectPost",
+		a.project_contacts_phone AS "projectContactsPhone",
+		a.is_transverse AS "isTransverse",
+		a.audit_status AS "auditStatus",
+		a.is_report AS "isReport",
+		a.department_statistics_id AS "departmentStatisticsId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="educationProjectInfoJoins">
+	</sql>
+    
+	<select id="get" resultType="EducationProjectInfo">
+		SELECT 
+			<include refid="educationProjectInfoColumns"/>
+		FROM education_project_info a
+		<include refid="educationProjectInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<sql id="find_educationProjectInfo_where">
+		a.del_flag = #{DEL_FLAG_NORMAL}
+	</sql>
+	
+	<select id="findCount" resultType="long">
+		SELECT COUNT(*)
+		FROM education_project_info a
+		<include refid="educationProjectInfoJoins"/>
+		<where>
+			<include refid="find_educationProjectInfo_where"/>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="EducationProjectInfo">
+		SELECT 
+			<include refid="educationProjectInfoColumns"/>
+		FROM education_project_info a
+		<include refid="educationProjectInfoJoins"/>
+		<where>
+			<include refid="find_educationProjectInfo_where"/>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="EducationProjectInfo">
+		SELECT 
+			<include refid="educationProjectInfoColumns"/>
+		FROM education_project_info a
+		<include refid="educationProjectInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO education_project_info(
+			id,
+			belong_to_first,
+			subject_code,
+			project_unit,
+			project_code,
+			project_name,
+			project_category,
+			attribute,
+			is_together,
+			plan_year,
+			project_cycle,
+			latest_approval_year,
+			confidentiality_level,
+			confidentiality_term_unit,
+			confidentiality_term,
+			project_leader,
+			project_post,
+			project_contacts_phone,
+			is_transverse,
+			audit_status,
+			is_report,
+			department_statistics_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{belongToFirst},
+			#{subjectCode},
+			#{projectUnit},
+			#{projectCode},
+			#{projectName},
+			#{projectCategory},
+			#{attribute},
+			#{isTogether},
+			#{planYear},
+			#{projectCycle},
+			#{latestApprovalYear},
+			#{confidentialityLevel},
+			#{confidentialityTermUnit},
+			#{confidentialityTerm},
+			#{projectLeader},
+			#{projectPost},
+			#{projectContactsPhone},
+			#{isTransverse},
+			#{auditStatus},
+			#{isReport},
+			#{departmentStatisticsId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	
+	  <insert id ="batchInsert" parameterType="java.util.List">
+		INSERT INTO education_project_info(
+			id,
+			belong_to_first,
+			subject_code,
+			project_unit,
+			project_code,
+			project_name,
+			project_category,
+			attribute,
+			is_together,
+			plan_year,
+			project_cycle,
+			latest_approval_year,
+			confidentiality_level,
+			confidentiality_term_unit,
+			confidentiality_term,
+			project_leader,
+			project_post,
+			project_contacts_phone,
+			is_transverse,
+			audit_status,
+			is_report,
+			department_statistics_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) 
+		   <foreach collection="list" item="item" index="index" separator =",">
+       
+		VALUES (
+			#{item.id},
+			#{item.belongToFirst},
+			#{item.subjectCode},
+			#{item.projectUnit},
+			#{item.projectCode},
+			#{item.projectName},
+			#{item.projectCategory},
+			#{item.attribute},
+			#{item.isTogether},
+			#{item.planYear},
+			#{item.projectCycle},
+			#{item.latestApprovalYear},
+			#{item.confidentialityLevel},
+			#{item.confidentialityTermUnit},
+			#{item.confidentialityTerm},
+			#{item.projectLeader},
+			#{item.projectPost},
+			#{item.projectContactsPhone},
+			#{item.isTransverse},
+			#{item.auditStatus},
+			#{item.isReport},
+			#{item.departmentStatisticsId},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+	</insert>
+	
+	<insert id ="batchInsertUpdate" parameterType="java.util.List">
+		INSERT INTO education_project_info(
+			id,
+			belong_to_first,
+			subject_code,
+			project_unit,
+			project_code,
+			project_name,
+			project_category,
+			attribute,
+			is_together,
+			plan_year,
+			project_cycle,
+			latest_approval_year,
+			confidentiality_level,
+			confidentiality_term_unit,
+			confidentiality_term,
+			project_leader,
+			project_post,
+			project_contacts_phone,
+			is_transverse,
+			audit_status,
+			is_report,
+			department_statistics_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator =",">
+        (
+			#{item.id},
+			#{item.belongToFirst},
+			#{item.subjectCode},
+			#{item.projectUnit},
+			#{item.projectCode},
+			#{item.projectName},
+			#{item.projectCategory},
+			#{item.attribute},
+			#{item.isTogether},
+			#{item.planYear},
+			#{item.projectCycle},
+			#{item.latestApprovalYear},
+			#{item.confidentialityLevel},
+			#{item.confidentialityTermUnit},
+			#{item.confidentialityTerm},
+			#{item.projectLeader},
+			#{item.projectPost},
+			#{item.projectContactsPhone},
+			#{item.isTransverse},
+			#{item.auditStatus},
+			#{item.isReport},
+			#{item.departmentStatisticsId},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+			belong_to_first = values(belong_to_first),
+			subject_code = values(subject_code),
+			project_unit = values(project_unit),
+			project_code = values(project_code),
+			project_name = values(project_name),
+			project_category = values(project_category),
+			attribute = values(attribute),
+			is_together = values(is_together),
+			plan_year = values(plan_year),
+			project_cycle = values(project_cycle),
+			latest_approval_year = values(latest_approval_year),
+			confidentiality_level = values(confidentiality_level),
+			confidentiality_term_unit = values(confidentiality_term_unit),
+			confidentiality_term = values(confidentiality_term),
+			project_leader = values(project_leader),
+			project_post = values(project_post),
+			project_contacts_phone = values(project_contacts_phone),
+			is_transverse = values(is_transverse),
+			audit_status = values(audit_status),
+			is_report = values(is_report),
+			department_statistics_id = values(department_statistics_id),
+			update_by = values(update_by),
+			update_date = values(update_date),
+			remarks = values(remarks)
+		
+	</insert>
+	
+ <update id ="batchUpdate" parameterType="java.util.List" >
+      <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+		UPDATE education_project_info SET 	
+			belong_to_first = #{item.belongToFirst},
+			subject_code = #{item.subjectCode},
+			project_unit = #{item.projectUnit},
+			project_code = #{item.projectCode},
+			project_name = #{item.projectName},
+			project_category = #{item.projectCategory},
+			attribute = #{item.attribute},
+			is_together = #{item.isTogether},
+			plan_year = #{item.planYear},
+			project_cycle = #{item.projectCycle},
+			latest_approval_year = #{item.latestApprovalYear},
+			confidentiality_level = #{item.confidentialityLevel},
+			confidentiality_term_unit = #{item.confidentialityTermUnit},
+			confidentiality_term = #{item.confidentialityTerm},
+			project_leader = #{item.projectLeader},
+			project_post = #{item.projectPost},
+			project_contacts_phone = #{item.projectContactsPhone},
+			is_transverse = #{item.isTransverse},
+			audit_status = #{item.auditStatus},
+			is_report = #{item.isReport},
+			department_statistics_id = #{item.departmentStatisticsId},
+			update_by = #{item.updateBy.id},
+			update_date = #{item.updateDate},
+			remarks = #{item.remarks}
+		WHERE id = #{id}
+		</foreach>
+	</update>
+	
+	<update id="update">
+		UPDATE education_project_info SET 	
+       			belong_to_first = #{belongToFirst},
+			subject_code = #{subjectCode},
+			project_unit = #{projectUnit},
+			project_code = #{projectCode},
+			project_name = #{projectName},
+			project_category = #{projectCategory},
+			attribute = #{attribute},
+			is_together = #{isTogether},
+			plan_year = #{planYear},
+			project_cycle = #{projectCycle},
+			latest_approval_year = #{latestApprovalYear},
+			confidentiality_level = #{confidentialityLevel},
+			confidentiality_term_unit = #{confidentialityTermUnit},
+			confidentiality_term = #{confidentialityTerm},
+			project_leader = #{projectLeader},
+			project_post = #{projectPost},
+			project_contacts_phone = #{projectContactsPhone},
+			is_transverse = #{isTransverse},
+			audit_status = #{auditStatus},
+			is_report = #{isReport},
+			department_statistics_id = #{departmentStatisticsId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 禁用 -->
+	<update id="disable">
+		UPDATE education_project_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete">
+		DELETE FROM education_project_info WHERE id = #{id}
+	</delete>
+	
+	<!-- 批量删除 ,参数为String类型id数组，如   String[] ids ，url: ids=1&ids=2&ids=3 或 ids=1,2,3 -->
+	<delete id="deleteByIds1" parameterType="String">
+		DELETE FROM education_project_info WHERE id IN
+		<foreach collection="array" item="item" open=" (" close=") " separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	
+	<delete id="deleteByIds" parameterType="EducationProjectInfo">
+		DELETE FROM education_project_info WHERE id IN
+		<foreach collection="ids" item="id" open=" (" close=") " separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+</mapper>

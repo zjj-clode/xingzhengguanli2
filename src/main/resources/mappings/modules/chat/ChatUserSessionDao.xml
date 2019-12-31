@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudinte.zhaosheng.modules.chat.dao.ChatUserSessionDao">
+    
+	<sql id="chatUserSessionColumns">
+		a.id AS "id",
+		a.target AS "target",
+		a.update_date AS "updateDate",
+		a.user_id AS "user.id",
+		a.unread_count AS "unreadCount",
+		u4.name AS "user.name",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="chatUserSessionJoins">
+		LEFT JOIN sys_user u4 ON u4.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="ChatUserSession">
+		SELECT 
+			<include refid="chatUserSessionColumns"/>
+		FROM chat_user_session a
+		<include refid="chatUserSessionJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ChatUserSession">
+		SELECT 
+			<include refid="chatUserSessionColumns"/>
+		FROM chat_user_session a
+		<include refid="chatUserSessionJoins"/>
+		<where>
+			<if test="user != null and user.id != ''">
+				a.user_id = #{user.id}
+			</if>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag}
+			</if>
+			<!-- <if test="unreadCount > 0">
+				and a.unread_count > 0
+			</if> -->
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ChatUserSession">
+		SELECT 
+			<include refid="chatUserSessionColumns"/>
+		FROM chat_user_session a
+		<include refid="chatUserSessionJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	<insert id="insert">
+		INSERT INTO chat_user_session(
+			id,
+			target,
+			update_date,
+			unread_count,
+			user_id,
+			del_flag
+		) VALUES (
+			#{id},
+			#{target},
+			#{updateDate},
+			#{unreadCount},
+			#{user.id},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE chat_user_session SET 	
+			target = #{target},
+			update_date = #{updateDate},
+			user_id = #{user.id},
+			unread_count=#{unreadCount},
+			del_flag = #{delFlag}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE chat_user_session SET del_flag = '1'
+		WHERE id = #{id}
+	</update>
+	
+	<select id="findUserSession" resultType="ChatUserSession">
+		SELECT 
+			<include refid="chatUserSessionColumns"/>
+		FROM chat_user_session a
+		<include refid="chatUserSessionJoins"/>
+		WHERE a.user_id = #{param1} and a.target = #{param2}
+	</select>
+	
+	<select id="findCustomSessionCount" resultType="int">
+		SELECT 
+			count(1)
+		FROM chat_user_session
+		WHERE user_id = #{customId} and del_flag = 0
+	</select>
+</mapper>

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudinte.modules.log.dao.BusinessLogDao">
+    
+	<sql id="businessLogColumns">
+		a.id AS "id",
+		a.title AS "title",
+		a.type AS "type",
+		a.pre_change_data AS "preChangeData",
+		a.post_change_data AS "postChangeData",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.remarks AS "remarks",
+		a.ip AS "ip",
+		u.name AS "createBy.name"
+	</sql>
+	
+	<sql id="businessLogJoins">
+		JOIN sys_user u ON u.id = a.create_by
+	</sql>
+    
+	<select id="get" resultType="BusinessLog">
+		SELECT 
+			<include refid="businessLogColumns"/>
+		FROM akmi_common_businesslog a
+		<include refid="businessLogJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<sql id="find_businessLog_where">
+		<if test="ip != null and ip != ''">
+			AND a.ip LIKE 
+			<if test="dbName == 'oracle'">'%'||#{ip}||'%'</if>
+			<if test="dbName == 'mysql'">CONCAT('%', #{ip}, '%')</if>
+		</if>
+		<if test="title != null and title != ''">
+			AND a.title LIKE 
+			<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+			<if test="dbName == 'mysql'">CONCAT('%', #{title}, '%')</if>
+		</if>
+		<if test="type != null and type != ''">
+			AND a.type = #{type} 
+		</if>
+		<if test="preChangeData != null and preChangeData != ''">
+			AND a.pre_change_data LIKE 
+			<if test="dbName == 'oracle'">'%'||#{preChangeData}||'%'</if>
+			<if test="dbName == 'mysql'">CONCAT('%', #{preChangeData}, '%')</if>
+		</if>
+		<if test="postChangeData != null and postChangeData != ''">
+			AND a.post_change_data LIKE 
+			<if test="dbName == 'oracle'">'%'||#{postChangeData}||'%'</if>
+			<if test="dbName == 'mysql'">CONCAT('%', #{postChangeData}, '%')</if>
+		</if>
+		<if test="createBy!=null">
+			<if test="createBy.id != null and createBy.id != ''">
+				AND a.create_by = #{createBy.id}
+			</if>
+			<if test="createBy.name != null and createBy.name != ''">
+				AND u.name LIKE
+				<if test="dbName == 'oracle'">'%'||#{createBy.name}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{createBy.name}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{createBy.name},'%')</if>
+			</if>
+		</if>
+		<if test="beginDate != null">
+			AND a.create_date &gt;= #{beginDate}
+		</if>
+		<if test="endDate != null">
+			AND a.create_date &lt;= #{endDate}
+		</if>
+		<if test="currentUser.id != null and currentUser.id != ''">
+			AND a.create_by = #{currentUser.id}
+		</if>
+		<if test="remarks != null and remarks != ''">
+			AND a.remarks LIKE 
+			<if test="dbName == 'oracle'">'%'||#{remarks}||'%'</if>
+			<if test="dbName == 'mysql'">CONCAT('%', #{remarks}, '%')</if>
+		</if>
+	</sql>
+	
+	<select id="findList" resultType="BusinessLog">
+		SELECT 
+			<include refid="businessLogColumns"/>
+		FROM akmi_common_businesslog a
+			<include refid="businessLogJoins"/>
+		<where>
+			<include refid="find_businessLog_where"/>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findCount" resultType="long">
+		SELECT 
+			count(*)
+		FROM akmi_common_businesslog a
+			<include refid="businessLogJoins"/>
+		<where>
+			<include refid="find_businessLog_where"/>
+		</where>
+	</select>
+ 
+	<insert id="insert">
+		INSERT INTO akmi_common_businesslog(
+			id,
+			title,
+			type,
+			pre_change_data,
+			post_change_data,
+			create_by,
+			create_date,
+			remarks,
+			ip
+		) VALUES (
+			#{id},
+			#{title},
+			#{type},
+			#{preChangeData},
+			#{postChangeData},
+			#{createBy.id},
+			#{createDate},
+			#{remarks},
+			#{ip}
+		)
+	</insert>
+	
+	<delete id="delete">
+		DELETE FROM akmi_common_businesslog WHERE id = #{id}
+	</delete>
+	<delete id="deleteBatch" parameterType="BusinessLog">
+		DELETE FROM akmi_common_businesslog WHERE id IN
+		<foreach collection="ids" item="id" open=" (" close=") " separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+	
+	<!-- 获取当前用户的最新的操作日志，用于首页的展示 -->
+	<select id="getBusinessLog" resultType="hashmap">
+	SELECT
+			a.title,a.create_date,a.type
+		FROM
+			akmi_common_businesslog a
+		<if test="userId != null">
+			JOIN sys_user u 
+			ON u.id = a.create_by
+		</if>
+		where a.create_date &lt;= #{date} 
+		<if test="userId != null">
+			and a.create_by = #{userId}
+		</if>
+		ORDER BY
+			a.create_date DESC
+		limit 4
+	</select>
+</mapper>

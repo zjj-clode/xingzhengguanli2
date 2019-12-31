@@ -1,0 +1,5 @@
+.ui-error{border:1px solid #f76262;}
+.tip{padding-left:10px;}
+.tip_init{height:20px;line-height:20px;font-size:12px;float:left;}
+.tiperror{margin-left:10px;padding-left:23px;color: #FF0000;background:url(../images/icon/minus.png) center left no-repeat;}
+.tipcorrect{margin-left:10px;padding-left:23px;background:url(../images/icon/right.png) center left no-repeat;}

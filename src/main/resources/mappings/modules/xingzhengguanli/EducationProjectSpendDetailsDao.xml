@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudinte.modules.xingzhengguanli.dao.EducationProjectSpendDetailsDao">
+    
+	<sql id="educationProjectSpendDetailsColumns">
+		a.id AS "id",
+		a.project_des_id AS "projectDes.id",
+		a.project_name AS "projectName",
+		a.project_description AS "projectDescription",
+		a.child_project AS "childProject",
+		a.child_project_description AS "childProjectDescription",
+		a.sub_item_expenditure AS "subItemExpenditure",
+		a.number_frequency AS "numberFrequency",
+		a.money AS "money",
+		a.year AS "year",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.user_id AS "user.id",
+		u17.name AS "user.name"
+	</sql>
+	
+	<sql id="educationProjectSpendDetailsJoins">
+		JOIN sys_user u17 ON u17.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="EducationProjectSpendDetails">
+		SELECT 
+			<include refid="educationProjectSpendDetailsColumns"/>
+		FROM education_project_spend_details a
+		<include refid="educationProjectSpendDetailsJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<sql id="find_educationProjectSpendDetails_where">
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="projectDes != null and projectDes.id != null and projectDes.id != ''">
+			AND a.project_des_id = #{projectDes.id}
+		</if>
+		<if test="projectName != null and projectName != ''">
+			AND a.project_name = #{projectName}
+		</if>
+		<if test="user != null and user.id != null and user.id != ''">
+			AND a.user_id = #{user.id}
+		</if>
+		<if test="year != null and year != ''">
+			AND a.year = #{year}
+		</if>
+	</sql>
+	
+	<select id="findCount" resultType="long">
+		SELECT COUNT(*)
+		FROM education_project_spend_details a
+		<include refid="educationProjectSpendDetailsJoins"/>
+		<where>
+			<include refid="find_educationProjectSpendDetails_where"/>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="EducationProjectSpendDetails">
+		SELECT 
+			<include refid="educationProjectSpendDetailsColumns"/>
+		FROM education_project_spend_details a
+		<include refid="educationProjectSpendDetailsJoins"/>
+		<where>
+			<include refid="find_educationProjectSpendDetails_where"/>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="EducationProjectSpendDetails">
+		SELECT 
+			<include refid="educationProjectSpendDetailsColumns"/>
+		FROM education_project_spend_details a
+		<include refid="educationProjectSpendDetailsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findExportSpendDetails" resultType="EducationProjectSpendDetails">
+		
+		SELECT 
+			t2.sort,
+			t2.year,
+			t2.projectName,
+			t2.projectDescription,
+			t2.childProject,
+			t2.childProjectDescription,
+			t2.subItemExpenditure,
+			t2.numberFrequency,
+			t2.money
+		FROM 
+		(
+		SELECT 
+		0 AS "sort",
+		a.year AS "year",
+		"总计" AS "projectName",
+		"" AS "projectDescription",
+		"" AS "childProject",
+		"" AS "childProjectDescription",
+		"" AS "subItemExpenditure",
+		"" AS "numberFrequency",
+		SUM(a.money) AS "money"
+		FROM education_project_spend_details a 
+		<where>
+			<include refid="find_educationProjectSpendDetails_where"/>
+		</where>
+		
+		UNION 
+		
+		SELECT 
+		d.sort AS "sort",
+		a.year AS "year",
+		a.project_name AS "projectName",
+		a.project_description AS "projectDescription",
+		a.child_project AS "childProject",
+		a.child_project_description AS "childProjectDescription",
+		a.sub_item_expenditure AS "subItemExpenditure",
+		a.number_frequency AS "numberFrequency",
+		a.money AS "money"
+		FROM education_project_spend_details a 
+		JOIN education_project_description d ON a.project_des_id = d.id
+		<where>
+			<include refid="find_educationProjectSpendDetails_where"/>
+		</where>
+		) t2 
+		
+		ORDER BY t2.sort ASC
+				
+		
+			<!-- SELECT 
+				t2.sort,
+				t2.year,
+				t2.projectName,
+				t2.projectDescription,
+				t2.childProject,
+				t2.childProjectDescription,
+				t2.subItemExpenditure,
+				t2.numberFrequency,
+				t2.money
+			FROM 
+			(
+			SELECT 
+			0 AS "sort",
+			a.year AS "year",
+			"总计" AS "projectName",
+			"" AS "projectDescription",
+			"" AS "childProject",
+			"" AS "childProjectDescription",
+			"" AS "subItemExpenditure",
+			"" AS "numberFrequency",
+			SUM(a.money) AS "money"
+			FROM education_project_spend_details a 
+			<where>
+				<include refid="find_educationProjectSpendDetails_where"/>
+			</where>
+			GROUP BY a.year
+			
+			UNION 
+			
+			SELECT 
+			d.sort,
+			t1.year AS "year",
+			t1.projectName AS "projectName",
+			t1.projectDescription AS "projectDescription",
+			t1.childProject AS "childProject",
+			t1.childProjectDescription AS "childProjectDescription",
+			t1.subItemExpenditure AS "subItemExpenditure",
+			t1.numberFrequency AS "numberFrequency",
+			t1.money AS "money"
+			FROM education_project_description d 
+			
+			LEFT JOIN (
+			
+			SELECT a.year AS "year",
+			a.project_name AS "projectName",
+			a.project_description AS "projectDescription",
+			a.child_project AS "childProject",
+			a.child_project_description AS "childProjectDescription",
+			a.sub_item_expenditure AS "subItemExpenditure",
+			a.number_frequency AS "numberFrequency",
+			a.money AS "money",
+			a.project_des_id AS "desid"
+			
+			FROM education_project_spend_details a 
+			<where>
+				<include refid="find_educationProjectSpendDetails_where"/>
+			</where>
+			) t1 ON d.id = t1.desid  ) t2 
+			
+			ORDER BY t2.sort ASC
+		 -->
+		
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO education_project_spend_details(
+			id,
+			project_des_id,
+			project_name,
+			project_description,
+			child_project,
+			child_project_description,
+			sub_item_expenditure,
+			number_frequency,
+			money,
+			year,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			user_id
+		) VALUES (
+			#{id},
+			#{projectDes.id},
+			#{projectName},
+			#{projectDescription},
+			#{childProject},
+			#{childProjectDescription},
+			#{subItemExpenditure},
+			#{numberFrequency},
+			#{money},
+			#{year},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{user.id}
+		)
+	</insert>
+	
+	
+	  <insert id ="batchInsert" parameterType="java.util.List">
+		INSERT INTO education_project_spend_details(
+			id,
+			project_des_id,
+			project_name,
+			project_description,
+			child_project,
+			child_project_description,
+			sub_item_expenditure,
+			number_frequency,
+			money,
+			year,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			user_id
+		) VALUES 
+		   <foreach collection="list" item="item" index="index" separator =",">
+       
+		(
+			#{item.id},
+			#{item.projectDes.id},
+			#{item.projectName},
+			#{item.projectDescription},
+			#{item.childProject},
+			#{item.childProjectDescription},
+			#{item.subItemExpenditure},
+			#{item.numberFrequency},
+			#{item.money},
+			#{item.year},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag},
+			#{item.user.id}
+		)
+		</foreach>
+	</insert>
+	
+	<insert id ="batchInsertUpdate" parameterType="java.util.List">
+		INSERT INTO education_project_spend_details(
+			id,
+			project_des_id,
+			project_name,
+			project_description,
+			child_project,
+			child_project_description,
+			sub_item_expenditure,
+			number_frequency,
+			money,
+			year,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			user_id
+		)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator =",">
+        (
+			#{item.id},
+			#{item.projectDes.id},
+			#{item.projectName},
+			#{item.projectDescription},
+			#{item.childProject},
+			#{item.childProjectDescription},
+			#{item.subItemExpenditure},
+			#{item.numberFrequency},
+			#{item.money},
+			#{item.year},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag},
+			#{item.user.id}
+		)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+			project_des_id = values(project_des_id),
+			project_name = values(project_name),
+			project_description = values(project_description),
+			child_project = values(child_project),
+			child_project_description = values(child_project_description),
+			sub_item_expenditure = values(sub_item_expenditure),
+			number_frequency = values(number_frequency),
+			money = values(money),
+			year = values(year),
+			update_by = values(update_by),
+			update_date = values(update_date),
+			remarks = values(remarks),
+			user_id = values(user_id)
+		
+	</insert>
+	
+ <update id ="batchUpdate" parameterType="java.util.List" >
+      <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+		UPDATE education_project_spend_details SET 	
+			project_des_id = #{item.projectDes.id},
+			project_name = #{item.projectName},
+			project_description = #{item.projectDescription},
+			child_project = #{item.childProject},
+			child_project_description = #{item.childProjectDescription},
+			sub_item_expenditure = #{item.subItemExpenditure},
+			number_frequency = #{item.numberFrequency},
+			money = #{item.money},
+			year = #{item.year},
+			update_by = #{item.updateBy.id},
+			update_date = #{item.updateDate},
+			remarks = #{item.remarks},
+			user_id = #{item.user.id}
+		WHERE id = #{item.id}
+		</foreach>
+	</update>
+	
+	<update id="update">
+		UPDATE education_project_spend_details SET 	
+       			project_des_id = #{projectDes.id},
+			project_name = #{projectName},
+			project_description = #{projectDescription},
+			child_project = #{childProject},
+			child_project_description = #{childProjectDescription},
+			sub_item_expenditure = #{subItemExpenditure},
+			number_frequency = #{numberFrequency},
+			money = #{money},
+			year = #{year},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			user_id = #{user.id}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 禁用 -->
+	<update id="disable">
+		UPDATE education_project_spend_details SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete">
+		DELETE FROM education_project_spend_details WHERE id = #{id}
+	</delete>
+	
+	<!-- 删除 -->
+	<delete id="deleteByUserAndYear">
+		DELETE FROM education_project_spend_details WHERE user_id = #{user.id} AND year = #{year}
+	</delete>
+	
+	<!-- 批量删除 ,参数为String类型id数组，如   String[] ids ，url: ids=1&ids=2&ids=3 或 ids=1,2,3 -->
+	<delete id="deleteByIds1" parameterType="String">
+		DELETE FROM education_project_spend_details WHERE id IN
+		<foreach collection="array" item="item" open=" (" close=") " separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	
+	<delete id="deleteByIds" parameterType="EducationProjectSpendDetails">
+		DELETE FROM education_project_spend_details WHERE id IN
+		<foreach collection="ids" item="id" open=" (" close=") " separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+</mapper>

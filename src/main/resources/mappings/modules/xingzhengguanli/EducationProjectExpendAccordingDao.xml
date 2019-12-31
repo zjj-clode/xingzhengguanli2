@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudinte.modules.xingzhengguanli.dao.EducationProjectExpendAccordingDao">
+    
+	<sql id="educationProjectExpendAccordingColumns">
+		a.id AS "id",
+		a.user_id AS "user.id",
+		a.project_name AS "projectName",
+		a.project_unit AS "projectUnit",
+		a.project_code AS "projectCode",
+		a.project_category AS "projectCategory",
+		a.project_start_year AS "projectStartYear",
+		a.project_cycle AS "projectCycle",
+		a.reform_in_education AS "reformInEducation",
+		a.basic_position AS "basicPosition",
+		a.professional_structure AS "professionalStructure",
+		a.mechanism AS "mechanism",
+		a.fuse AS "fuse",
+		a.personnel_training AS "personnelTraining",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		u2.name AS "user.name"
+	</sql>
+	
+	<sql id="educationProjectExpendAccordingJoins">
+		 JOIN sys_user u2 ON u2.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="EducationProjectExpendAccording">
+		SELECT 
+			<include refid="educationProjectExpendAccordingColumns"/>
+		FROM education_project_expend_according a
+		<include refid="educationProjectExpendAccordingJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<sql id="find_educationProjectExpendAccording_where">
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="user != null and user.id != null and user.id != ''">
+			AND a.user_id = #{user.id}
+		</if>
+		<if test="projectName != null and projectName != ''">
+			AND a.project_name LIKE 
+				<if test="dbName == 'oracle'">'%'||#{projectName}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{projectName}+'%'</if>  
+				<if test="dbName == 'mysql'">concat('%',#{projectName},'%')</if>
+		</if>
+		<if test="projectUnit != null and projectUnit != ''">
+			AND a.project_unit LIKE 
+				<if test="dbName == 'oracle'">'%'||#{projectUnit}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{projectUnit}+'%'</if>  
+				<if test="dbName == 'mysql'">concat('%',#{projectUnit},'%')</if>
+		</if>
+		<if test="projectCode != null and projectCode != ''">
+			AND a.project_code LIKE 
+				<if test="dbName == 'oracle'">'%'||#{projectCode}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{projectCode}+'%'</if>  
+				<if test="dbName == 'mysql'">concat('%',#{projectCode},'%')</if>
+		</if>
+		<if test="projectCategory != null and projectCategory != ''">
+			AND a.project_category LIKE 
+				<if test="dbName == 'oracle'">'%'||#{projectCategory}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{projectCategory}+'%'</if>  
+				<if test="dbName == 'mysql'">concat('%',#{projectCategory},'%')</if>
+		</if>
+		<if test="projectStartYear != null and projectStartYear != ''">
+			AND a.project_start_year = #{projectStartYear}
+		</if>
+		<if test="projectCycle != null and projectCycle != ''">
+			AND a.project_cycle = #{projectCycle}
+		</if>
+	</sql>
+	
+	<select id="findCount" resultType="long">
+		SELECT COUNT(*)
+		FROM education_project_expend_according a
+		<include refid="educationProjectExpendAccordingJoins"/>
+		<where>
+			<include refid="find_educationProjectExpendAccording_where"/>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="EducationProjectExpendAccording">
+		SELECT 
+			<include refid="educationProjectExpendAccordingColumns"/>
+		FROM education_project_expend_according a
+		<include refid="educationProjectExpendAccordingJoins"/>
+		<where>
+			<include refid="find_educationProjectExpendAccording_where"/>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.project_start_year DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="EducationProjectExpendAccording">
+		SELECT 
+			<include refid="educationProjectExpendAccordingColumns"/>
+		FROM education_project_expend_according a
+		<include refid="educationProjectExpendAccordingJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO education_project_expend_according(
+			id,
+			user_id,
+			project_name,
+			project_unit,
+			project_code,
+			project_category,
+			project_start_year,
+			project_cycle,
+			reform_in_education,
+			basic_position,
+			professional_structure,
+			mechanism,
+			fuse,
+			personnel_training,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{user.id},
+			#{projectName},
+			#{projectUnit},
+			#{projectCode},
+			#{projectCategory},
+			#{projectStartYear},
+			#{projectCycle},
+			#{reformInEducation},
+			#{basicPosition},
+			#{professionalStructure},
+			#{mechanism},
+			#{fuse},
+			#{personnelTraining},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	
+	  <insert id ="batchInsert" parameterType="java.util.List">
+		INSERT INTO education_project_expend_according(
+			id,
+			user_id,
+			project_name,
+			project_unit,
+			project_code,
+			project_category,
+			project_start_year,
+			project_cycle,
+			reform_in_education,
+			basic_position,
+			professional_structure,
+			mechanism,
+			fuse,
+			personnel_training,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES 
+		   <foreach collection="list" item="item" index="index" separator =",">
+       
+		(
+			#{item.id},
+			#{item.user.id},
+			#{item.projectName},
+			#{item.projectUnit},
+			#{item.projectCode},
+			#{item.projectCategory},
+			#{item.projectStartYear},
+			#{item.projectCycle},
+			#{item.reformInEducation},
+			#{item.basicPosition},
+			#{item.professionalStructure},
+			#{item.mechanism},
+			#{item.fuse},
+			#{item.personnelTraining},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+	</insert>
+	
+	<insert id ="batchInsertUpdate" parameterType="java.util.List">
+		INSERT INTO education_project_expend_according(
+			id,
+			user_id,
+			project_name,
+			project_unit,
+			project_code,
+			project_category,
+			project_start_year,
+			project_cycle,
+			reform_in_education,
+			basic_position,
+			professional_structure,
+			mechanism,
+			fuse,
+			personnel_training,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator =",">
+        (
+			#{item.id},
+			#{item.user.id},
+			#{item.projectName},
+			#{item.projectUnit},
+			#{item.projectCode},
+			#{item.projectCategory},
+			#{item.projectStartYear},
+			#{item.projectCycle},
+			#{item.reformInEducation},
+			#{item.basicPosition},
+			#{item.professionalStructure},
+			#{item.mechanism},
+			#{item.fuse},
+			#{item.personnelTraining},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+			user_id = values(user_id),
+			project_name = values(project_name),
+			project_unit = values(project_unit),
+			project_code = values(project_code),
+			project_category = values(project_category),
+			project_start_year = values(project_start_year),
+			project_cycle = values(project_cycle),
+			reform_in_education = values(reform_in_education),
+			basic_position = values(basic_position),
+			professional_structure = values(professional_structure),
+			mechanism = values(mechanism),
+			fuse = values(fuse),
+			personnel_training = values(personnel_training),
+			update_by = values(update_by),
+			update_date = values(update_date),
+			remarks = values(remarks)
+		
+	</insert>
+	
+ <update id ="batchUpdate" parameterType="java.util.List" >
+      <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+		UPDATE education_project_expend_according SET 	
+			user_id = #{item.user.id},
+			project_name = #{item.projectName},
+			project_unit = #{item.projectUnit},
+			project_code = #{item.projectCode},
+			project_category = #{item.projectCategory},
+			project_start_year = #{item.projectStartYear},
+			project_cycle = #{item.projectCycle},
+			reform_in_education = #{item.reformInEducation},
+			basic_position = #{item.basicPosition},
+			professional_structure = #{item.professionalStructure},
+			mechanism = #{item.mechanism},
+			fuse = #{item.fuse},
+			personnel_training = #{item.personnelTraining},
+			update_by = #{item.updateBy.id},
+			update_date = #{item.updateDate},
+			remarks = #{item.remarks}
+		WHERE id = #{item.id}
+		</foreach>
+	</update>
+	
+	<update id="update">
+		UPDATE education_project_expend_according SET 	
+       			user_id = #{user.id},
+			project_name = #{projectName},
+			project_unit = #{projectUnit},
+			project_code = #{projectCode},
+			project_category = #{projectCategory},
+			project_start_year = #{projectStartYear},
+			project_cycle = #{projectCycle},
+			reform_in_education = #{reformInEducation},
+			basic_position = #{basicPosition},
+			professional_structure = #{professionalStructure},
+			mechanism = #{mechanism},
+			fuse = #{fuse},
+			personnel_training = #{personnelTraining},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 禁用 -->
+	<update id="disable">
+		UPDATE education_project_expend_according SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete">
+		DELETE FROM education_project_expend_according WHERE id = #{id}
+	</delete>
+	
+	<!-- 批量删除 ,参数为String类型id数组，如   String[] ids ，url: ids=1&ids=2&ids=3 或 ids=1,2,3 -->
+	<delete id="deleteByIds1" parameterType="String">
+		DELETE FROM education_project_expend_according WHERE id IN
+		<foreach collection="array" item="item" open=" (" close=") " separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	
+	<delete id="deleteByIds" parameterType="EducationProjectExpendAccording">
+		DELETE FROM education_project_expend_according WHERE id IN
+		<foreach collection="ids" item="id" open=" (" close=") " separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+</mapper>

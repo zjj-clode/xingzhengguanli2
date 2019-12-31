@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudinte.modules.xingzhengguanli.dao.EducationProjectDescriptionDao">
+    
+	<sql id="educationProjectDescriptionColumns">
+		a.id AS "id",
+		a.project_name AS "projectName",
+		a.project_description AS "projectDescription",
+		a.child_project AS "childProject",
+		a.child_project_description AS "childProjectDescription",
+		a.sub_item_expenditure AS "subItemExpenditure",
+		a.number_frequency AS "numberFrequency",
+		a.sort AS "sort",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="educationProjectDescriptionJoins">
+	</sql>
+    
+	<select id="get" resultType="EducationProjectDescription">
+		SELECT 
+			<include refid="educationProjectDescriptionColumns"/>
+		FROM education_project_description a
+		<include refid="educationProjectDescriptionJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<sql id="find_educationProjectDescription_where">
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="projectName != null and projectName != ''">
+			AND a.project_name LIKE 
+				<if test="dbName == 'oracle'">'%'||#{projectName}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{projectName}+'%'</if>  
+				<if test="dbName == 'mysql'">concat('%',#{projectName},'%')</if>
+		</if>
+		<if test="childProject != null and childProject != ''">
+			AND a.child_project LIKE 
+				<if test="dbName == 'oracle'">'%'||#{childProject}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{childProject}+'%'</if>  
+				<if test="dbName == 'mysql'">concat('%',#{childProject},'%')</if>
+		</if>
+	</sql>
+	
+	<select id="findCount" resultType="long">
+		SELECT COUNT(*)
+		FROM education_project_description a
+		<include refid="educationProjectDescriptionJoins"/>
+		<where>
+			<include refid="find_educationProjectDescription_where"/>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="EducationProjectDescription">
+		SELECT 
+			<include refid="educationProjectDescriptionColumns"/>
+		FROM education_project_description a
+		<include refid="educationProjectDescriptionJoins"/>
+		<where>
+			<include refid="find_educationProjectDescription_where"/>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.sort ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="EducationProjectDescription">
+		SELECT 
+			<include refid="educationProjectDescriptionColumns"/>
+		FROM education_project_description a
+		<include refid="educationProjectDescriptionJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO education_project_description(
+			id,
+			project_name,
+			project_description,
+			child_project,
+			child_project_description,
+			sub_item_expenditure,
+			number_frequency,
+			sort,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{projectName},
+			#{projectDescription},
+			#{childProject},
+			#{childProjectDescription},
+			#{subItemExpenditure},
+			#{numberFrequency},
+			#{sort},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	
+	  <insert id ="batchInsert" parameterType="java.util.List">
+		INSERT INTO education_project_description(
+			id,
+			project_name,
+			project_description,
+			child_project,
+			child_project_description,
+			sub_item_expenditure,
+			number_frequency,
+			sort,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) 
+		   <foreach collection="list" item="item" index="index" separator =",">
+       
+		VALUES (
+			#{item.id},
+			#{item.projectName},
+			#{item.projectDescription},
+			#{item.childProject},
+			#{item.childProjectDescription},
+			#{item.subItemExpenditure},
+			#{item.numberFrequency},
+			#{item.sort},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+	</insert>
+	
+	<insert id ="batchInsertUpdate" parameterType="java.util.List">
+		INSERT INTO education_project_description(
+			id,
+			project_name,
+			project_description,
+			child_project,
+			child_project_description,
+			sub_item_expenditure,
+			number_frequency,
+			sort,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator =",">
+        (
+			#{item.id},
+			#{item.projectName},
+			#{item.projectDescription},
+			#{item.childProject},
+			#{item.childProjectDescription},
+			#{item.subItemExpenditure},
+			#{item.numberFrequency},
+			#{item.sort},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+			project_name = values(project_name),
+			project_description = values(project_description),
+			child_project = values(child_project),
+			child_project_description = values(child_project_description),
+			sub_item_expenditure = values(sub_item_expenditure),
+			number_frequency = values(number_frequency),
+			sort = values(sort),
+			update_by = values(update_by),
+			update_date = values(update_date),
+			remarks = values(remarks)
+		
+	</insert>
+	
+ <update id ="batchUpdate" parameterType="java.util.List" >
+      <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+		UPDATE education_project_description SET 	
+			project_name = #{item.projectName},
+			project_description = #{item.projectDescription},
+			child_project = #{item.childProject},
+			child_project_description = #{item.childProjectDescription},
+			sub_item_expenditure = #{item.subItemExpenditure},
+			number_frequency = #{item.numberFrequency},
+			sort = #{item.sort},
+			update_by = #{item.updateBy.id},
+			update_date = #{item.updateDate},
+			remarks = #{item.remarks}
+		WHERE id = #{id}
+		</foreach>
+	</update>
+	
+	<update id="update">
+		UPDATE education_project_description SET 	
+       			project_name = #{projectName},
+			project_description = #{projectDescription},
+			child_project = #{childProject},
+			child_project_description = #{childProjectDescription},
+			sub_item_expenditure = #{subItemExpenditure},
+			number_frequency = #{numberFrequency},
+			sort = #{sort},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 禁用 -->
+	<update id="disable">
+		UPDATE education_project_description SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete">
+		DELETE FROM education_project_description WHERE id = #{id}
+	</delete>
+	
+	<!-- 批量删除 ,参数为String类型id数组，如   String[] ids ，url: ids=1&ids=2&ids=3 或 ids=1,2,3 -->
+	<delete id="deleteByIds1" parameterType="String">
+		DELETE FROM education_project_description WHERE id IN
+		<foreach collection="array" item="item" open=" (" close=") " separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	
+	<delete id="deleteByIds" parameterType="EducationProjectDescription">
+		DELETE FROM education_project_description WHERE id IN
+		<foreach collection="ids" item="id" open=" (" close=") " separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+</mapper>

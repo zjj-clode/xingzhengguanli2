@@ -1,0 +1,181 @@
+body{
+    background:url(../images/bg_rpt.jpg) 0 0;
+}
+.gray{
+    color:#888;
+}
+#vote{
+    width: 920px;
+    margin:0 auto 15px;
+    color:#333;
+}
+#vote h1{
+    padding:50px 0 20px;
+    font-size:30px;
+    color:#294874;
+    text-shadow:1px 1px 1px #fff;
+}
+.wrapper{
+    border-radius:5px;
+    padding:20px;
+    background: rgba(255,255,255,0.4);
+}
+.content{
+    padding:10px 30px;
+    border:2px dashed #a2abb5;
+    outline: 1px dashed #fff;
+    border-radius:5px;
+}
+.tip{
+    text-shadow:1px 1px 1px #fff;
+}
+.voteItem{
+    padding:35px 0 30px;
+    border-bottom: 1px dashed #c1c9d2;
+}
+.voteItem dt em{
+    color:#294874;
+}
+.voteItem dd{
+    padding-left:26px;
+}
+.voteItem dd li{
+    line-height: 2;
+}
+.voteItem label{
+    cursor:pointer;
+}
+.ulradiocheck input{
+    display: none;
+}
+.ulradiocheck li{
+    cursor:pointer;
+}
+.ulradiocheck li:hover{
+    background: #ccd3db;
+}
+.ulradiocheck.lie2 li{
+    width: 48%;
+    margin-right: 2%;
+}
+.jqRadio,.jqCheckbox{
+    width: 18px;
+    height: 18px;
+    vertical-align: -4px;
+    cursor:pointer;
+    background: url(../images/bg_form.png) no-repeat;
+}
+.jqRadio.jqChecked{
+    background: url(../images/bg_form.png) no-repeat 0 -21px;
+}
+.jqCheckbox{
+    background: url(../images/bg_form.png) no-repeat 0 -43px;
+}
+.jqCheckbox.jqChecked{
+    background: url(../images/bg_form.png) no-repeat 0 -66px;
+}
+.jqText{
+    height: 26px;
+    line-height: 26px;
+    border:none;
+    margin: 0 5px;
+    padding:0 5px;
+    border-bottom: 1px solid #a2abb5;
+    background:none;
+}
+.jqTextarea{
+    width: 768px;
+    height:100px;
+    padding:10px;
+    border:1px solid #a2abb5;
+    resize: none;
+    background:none;
+}
+.voteBtn{
+    padding:40px 0;
+}
+.voteBtn span{
+    background: #294874;
+    border-radius: 5px;
+    height:50px;
+    line-height:50px;
+    width: 180px;
+    text-shadow:1px 1px 1px #061d3e;
+}
+.degree{
+    position: fixed;
+    top:220px;
+    width:65px;
+    height: 130px;
+    background: rgba(255,255,255,0.4);
+    left:50%;
+    margin-left:460px;
+    border-radius:0 5px 5px 0;
+    padding:10px 0;
+}
+.column{
+    background: #ccd3db;
+    width: 33px;
+    margin:5px auto 0;
+    height: 100px;
+    box-shadow: 0 0 2px #9aa5b1 inset;
+}
+.column span{
+    bottom:0;
+    left:0;
+    background: #294874;
+    width: 100%;
+    height:0;
+}
+/*popUp*/
+.popUp{
+    display: none;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background:rgba(0,0,0,0.4);
+    left:0;
+    top:0;
+}
+.popBox{
+    width: 400px;
+    height: 200px;
+    border-radius: 10px;
+    background: #fff;
+    margin:0 0 0 -200px;
+    left:50%;
+    top:250px;
+    padding:20px;
+    background:url(../images/bg_rpt.jpg) 0 0;
+}
+.popBox .popInn{
+    height: 200px;
+    border:2px dashed #a2abb5;
+    outline: 1px dashed #fff;
+    border-radius:10px;
+}
+.popBox .popInn .txt{
+    padding:55px 0 35px;
+    color:#294874;
+}
+.popBox .btn span{
+    border-radius: 5px;
+    height:40px;
+    line-height:40px;
+    width: 90px;
+    margin:0 10px;
+}
+.popBox .btn .sure{
+    background: #294874;
+    color:#fff;
+    text-shadow:1px 1px 1px #061d3e;
+}
+.popBox .btn .cancel{
+    background: #d4c9bc;
+    color:#294874;
+    text-shadow:1px 1px 1px #fff;
+}
+.popBox .close{
+    right:-50px;
+    top:-50px;
+}

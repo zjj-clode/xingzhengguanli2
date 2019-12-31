@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+  version="2.0">
+    
+  <description>JSTL 1.1 functions library</description>
+  <display-name>JSTL functions zhaosheng</display-name>
+  <tlib-version>1.1</tlib-version>
+  <short-name>fnz</short-name>
+  <uri>http://java.sun.com/jsp/jstl/functionsc</uri>
+
+
+  
+ <function>
+    <description>考生是否查询过录取结果</description>
+    <name>isCxlqjg</name>
+    <function-class>com.cloudinte.zhaosheng.modules.common.utils.LqcxUtils</function-class>
+    <function-signature> boolean isCxlqjg(java.lang.String,java.lang.String)</function-signature>
+    <example>${fnz:isCxlqjg(ksh,sfzh)}</example>
+  </function>
+  
+   <function>
+    <description>获得所有高考信息</description>
+    <name>getKsInfList</name>
+    <function-class>com.cloudinte.zhaosheng.modules.common.utils.LqcxUtils</function-class>
+    <function-signature>java.util.List getKsInfList()</function-signature>
+    <example>${fnz:getKsInfList()}</example>  
+  </function>
+  
+     <function>
+    <description>获得招生年份</description>
+    <name>getZsNf</name>
+    <function-class>com.cloudinte.zhaosheng.modules.common.utils.GradeUtil</function-class>
+    <function-signature>Integer getZsNf()</function-signature>
+    <example>${fnz:getZsNf()}</example>  
+  </function>
+  
+   <function>
+    <description>获得招生省市专业年份</description>
+    <name>getZsYearListF</name>
+    <function-class>com.cloudinte.zhaosheng.modules.common.utils.GradeUtil</function-class>
+    <function-signature> java.util.List getZsYearListF()</function-signature>
+    <example>${fnz:getZsYearListF()}</example>  
+  </function>
+  
+   <function>
+    <description>获得招生计划年份</description>
+    <name>getZsjhYearListF</name>
+    <function-class>com.cloudinte.zhaosheng.modules.common.utils.GradeUtil</function-class>
+    <function-signature> java.util.List getZsjhYearListF()</function-signature>
+    <example>${fnz:getZsjhYearListF()}</example>  
+  </function>
+  
+   <function>
+    <description>获得招生省市信息年份</description>
+    <name>getZsssYearListF</name>
+    <function-class>com.cloudinte.zhaosheng.modules.common.utils.GradeUtil</function-class>
+    <function-signature> java.util.List getZsssYearListF()</function-signature>
+    <example>${fnz:getZsssYearListF()}</example>  
+  </function>
+  
+   <function>
+    <description>获得文章发布的年份</description>
+    <name>getNewsNfF</name>
+    <function-class>com.thinkgem.jeesite.modules.cms.utils.CmsUtils</function-class>
+    <function-signature> java.util.List getNewsNfF(java.lang.String,java.lang.String)</function-signature>
+    <example>${fnz:getNewsNfF(categoryId,articleLink)}</example>  
+  </function>
+  
+   <function>
+    <description>获得招生省市专业信息</description>
+    <name>getzssszyListF</name>
+    <function-class>com.cloudinte.zhaosheng.modules.common.utils.GradeUtil</function-class>
+    <function-signature> java.util.List getzssszyListF()</function-signature>
+    <example>${fnz:getzssszyListF()}</example>  
+  </function>
+  
+  
+   
+  
+</taglib>

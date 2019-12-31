@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudinte.zhaosheng.modules.chat.dao.ChatMsgDao">
+    
+	<sql id="chatMsgColumns">
+		a.id AS "id",
+		a.type AS "type",
+		a.create_date AS "createDate",
+		a.content AS "content"
+	</sql>
+	
+	<sql id="chatMsgJoins">
+	</sql>
+    
+	<select id="get" resultType="ChatMsg">
+		SELECT 
+			<include refid="chatMsgColumns"/>
+		FROM chat_msg a
+		<include refid="chatMsgJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ChatMsg">
+		SELECT 
+			<include refid="chatMsgColumns"/>
+		FROM chat_msg a
+		<include refid="chatMsgJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ChatMsg">
+		SELECT 
+			<include refid="chatMsgColumns"/>
+		FROM chat_msg a
+		<include refid="chatMsgJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO chat_msg(
+			id,
+			type,
+			create_date,
+			content
+		) VALUES (
+			#{id},
+			#{type},
+			#{createDate},
+			#{content}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE chat_msg SET 	
+			type = #{type},
+			content = #{content}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM chat_msg
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

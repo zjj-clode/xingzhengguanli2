@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudinte.modules.xingzhengguanli.dao.WorkRegularMeetingContentDao">
+    
+	<sql id="workRegularMeetingContentColumns">
+		a.id AS "id",
+		a.user_id AS "user.id",
+		a.regular_meeting_id AS "regularMeeting.id",
+		a.content AS "content",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		u2.name AS "user.name",
+		
+		m.title AS "regularMeeting.title",
+		m.meeting_date AS "regularMeeting.meetingDate",
+		m.meeting_place AS "regularMeeting.meetingPlace",
+		m.meeting_department AS "regularMeeting.meetingDepartment"
+	</sql>
+	
+	<sql id="workRegularMeetingContentJoins">
+		JOIN sys_user u2 ON u2.id = a.user_id 
+		JOIN work_regular_meeting m ON m.id = a.regular_meeting_id
+	</sql>
+    
+	<select id="get" resultType="WorkRegularMeetingContent">
+		SELECT 
+			<include refid="workRegularMeetingContentColumns"/>
+		FROM work_regular_meeting_content a
+		<include refid="workRegularMeetingContentJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<sql id="find_workRegularMeetingContent_where">
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="user != null and user.id != null and user.id != ''">
+			AND a.user_id = #{user.id}
+		</if>
+		<if test="regularMeeting != null and regularMeeting.id != null and regularMeeting.id != ''">
+			AND a.regular_meeting_id = #{regularMeeting.id}
+		</if>
+		<if test="createBy != null and createBy.id != null and createBy.id != ''">
+			AND a.create_by  = #{createBy.id}
+		</if>
+	</sql>
+	
+	<select id="findCount" resultType="long">
+		SELECT COUNT(*)
+		FROM work_regular_meeting_content a
+		<include refid="workRegularMeetingContentJoins"/>
+		<where>
+			<include refid="find_workRegularMeetingContent_where"/>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="WorkRegularMeetingContent">
+		SELECT 
+			<include refid="workRegularMeetingContentColumns"/>
+		FROM work_regular_meeting_content a
+		<include refid="workRegularMeetingContentJoins"/>
+		<where>
+			<include refid="find_workRegularMeetingContent_where"/>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WorkRegularMeetingContent">
+		SELECT 
+			<include refid="workRegularMeetingContentColumns"/>
+		FROM work_regular_meeting_content a
+		<include refid="workRegularMeetingContentJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO work_regular_meeting_content(
+			id,
+			user_id,
+			regular_meeting_id,
+			content,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{user.id},
+			#{regularMeeting.id},
+			#{content},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	
+	  <insert id ="batchInsert" parameterType="java.util.List">
+		INSERT INTO work_regular_meeting_content(
+			id,
+			user_id,
+			regular_meeting_id,
+			content,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES 
+		   <foreach collection="list" item="item" index="index" separator =",">
+       
+		(
+			#{item.id},
+			#{item.user.id},
+			#{item.regularMeeting.id},
+			#{item.content},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+	</insert>
+	
+	<insert id ="batchInsertUpdate" parameterType="java.util.List">
+		INSERT INTO work_regular_meeting_content(
+			id,
+			user_id,
+			regular_meeting_id,
+			content,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator =",">
+        (
+			#{item.id},
+			#{item.user.id},
+			#{item.regularMeeting.id},
+			#{item.content},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+		)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+			user_id = values(user_id),
+			regular_meeting_id = values(regular_meeting_id),
+			content = values(content),
+			update_by = values(update_by),
+			update_date = values(update_date),
+			remarks = values(remarks)
+		
+	</insert>
+	
+ <update id ="batchUpdate" parameterType="java.util.List" >
+      <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+		UPDATE work_regular_meeting_content SET 	
+			user_id = #{item.user.id},
+			regular_meeting_id = #{item.regularMeeting.id},
+			content = #{item.content},
+			update_by = #{item.updateBy.id},
+			update_date = #{item.updateDate},
+			remarks = #{item.remarks}
+		WHERE id = #{item.id}
+		</foreach>
+	</update>
+	
+	<update id="update">
+		UPDATE work_regular_meeting_content SET 	
+       			user_id = #{user.id},
+			regular_meeting_id = #{regularMeeting.id},
+			content = #{content},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 禁用 -->
+	<update id="disable">
+		UPDATE work_regular_meeting_content SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete">
+		DELETE FROM work_regular_meeting_content WHERE id = #{id}
+	</delete>
+	
+	<!-- 批量删除 ,参数为String类型id数组，如   String[] ids ，url: ids=1&ids=2&ids=3 或 ids=1,2,3 -->
+	<delete id="deleteByIds1" parameterType="String">
+		DELETE FROM work_regular_meeting_content WHERE id IN
+		<foreach collection="array" item="item" open=" (" close=") " separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	
+	<delete id="deleteByIds" parameterType="WorkRegularMeetingContent">
+		DELETE FROM work_regular_meeting_content WHERE id IN
+		<foreach collection="ids" item="id" open=" (" close=") " separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+</mapper>

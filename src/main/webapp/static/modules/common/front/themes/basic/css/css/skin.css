@@ -1,0 +1,233 @@
+/*page skin*/
+body{
+	color:#333;
+}
+a{
+	color:#333;
+}
+/*topNav*/
+.ask a{
+	background: #d23929;
+	color:#fff;
+}
+/*search*/
+.search{
+	background: #f2f2f2 url(../images/bg_search.gif) no-repeat center top;
+}
+.searchBar{
+	background:#4ba9d2 url(../images/bg_search_bar.png) no-repeat right bottom;
+}
+.searchBar .btn{
+	background: none;
+	border:none;
+	color:#fff;
+}
+.search .tip em{
+	color:#d23929;
+}
+/*banner*/
+.banner .swiper-pagination-switch{
+    background: #fff;
+    opacity:0.4;
+}
+.banner .swiper-active-switch {
+	opacity: 1;
+}
+/*cMore*/
+.cMore{
+	color:#777;
+	background: url(../images/ico_more.png) no-repeat right center;
+}
+/*breadcrumb*/
+.breadcrumb a{
+	color:#999;
+}
+.breadcrumb strong{
+	color:#338ecf;
+}
+/*hotWrap*/
+.hotTab li{
+	background: #e9e9e9;
+}
+.hotTab li.on{
+	color:#fff;
+	background: url(../images/bg_tabon.png) no-repeat center top;
+	padding-bottom: 6px;
+	font-weight: bold;
+}
+.hotInn{
+	border:1px solid #ddd;
+}
+.relatedInn{
+	background: #f2f2f2;
+}
+.hotList li a{
+	color:#333;
+	padding-left:12px;
+	background: url(../images/ico_dot.png) no-repeat left center;
+}
+.hotList li a:hover{
+	color:#000;
+}
+.hotList .time{
+	color:#999;
+}
+.hotList li em{
+	color:#338ecf;
+}
+.hotWrap .pageNav{
+	border-top: 1px solid #ddd;
+}
+/*qnaWrap*/
+.qnaWrap{
+	background: #f2f2f2;
+}
+.qnaItem{
+	border:1px solid #ddd;
+	background: #fff;
+}
+.headInfo{
+	border-bottom: 1px solid #ddd;
+}
+.headInfo span{
+	color:#999;
+}
+.headInfo img{
+	vertical-align: -2px;
+}
+.askCont{
+	color:#0580b6;
+}
+.answerInn .label{
+	background: #338ecf;
+	color:#fff;
+}
+.answerCont{
+	background: #f2f2f2;
+}
+.answerCont .time{
+	color:#999;
+}
+.showmore{
+	background: #4ba9d2;
+	color:#fff;
+}
+/*pageNav*/
+.eachPage span{
+	border:1px solid #ddd;
+	background: #fff;
+	color:#ccc;
+}
+.eachPage span a{
+	color:#338ecf;
+}
+.goPage .txt{
+	border:1px solid #ddd;
+}
+.goPage a{
+	background: #4ba9d2;
+	color:#fff;
+}
+/*footer*/
+.footer{
+	background: #383634;
+	color:#fff;
+}
+/*newsCont*/
+.newsCont .info{
+	color:#666;
+}
+.contInn em{
+	color:#338ecf;
+}
+/*goGf*/
+.goGf{
+	color:#d23929;
+}
+.goGf .link{
+	color:#338ecf;
+	text-decoration: underline;
+}
+.goGf .btn,.formItem .choose{
+	background: #d2d2d2;
+}
+.goGf .btn:hover,.formItem .choose:hover{
+	background: #bbb;
+	text-decoration: none;
+}
+/*formItem*/
+.formItem{
+	background: #f2f2f2;
+}
+.formItem h3{
+	border-bottom: 1px solid #ddd;
+}
+.formItem .txt,.formItem textarea{
+	border:1px solid #ddd;
+}
+.formItem .sending{
+	background: #4ba9d2;
+	color:#fff;
+}
+.formItem .sended{
+	background: #bbb;
+}
+.askBtn{
+	background: #d23929;
+	color:#fff;
+}
+.attention{
+	color:#666;
+}
+.gfForm em{
+	color:#338ecf;
+}
+/*choosePop*/
+.popBox .ssList li.on{
+	color:#d23929;
+	font-weight: bold;
+}
+.popBox .sureBtn{
+	background: #d23929;
+	color:#fff;
+}
+.popBox .cleanBtn{
+	background: #ddd;
+}
+/*sureBox & result*/
+.result .btn_back{
+    color:#fff;
+    background: #d23929;
+}
+.result .btn_close{
+    color:#333;
+    background: #aaa;
+}
+.sureBox .btn{
+    color:#fff;
+    background: #d23929;
+}
+/*flList*/
+.flList dd{
+	color:#0580b6;
+}
+.flList span:hover{
+	background: #4ba9d2;
+	color:#fff;
+}
+.flList span.on,.flList span.on:hover{
+	background: #0580b6;
+	color:#fff;
+}
+/*table01*/
+.table01 th{
+	background: #0580b6;
+	color: #fff;
+}
+/*searchResult*/
+.searchResult dt a{
+	color:#0580b6;
+}
+.searchResult .kwd{
+	color:#d23929;
+}
