@@ -46,7 +46,7 @@
 		<freemarker.version>2.3.26-incubating</freemarker.version>
 		<quartz.version>2.2.2</quartz.version>
 		<httpcomponents.version>4.3.6</httpcomponents.version>
-		<lucene.version>5.5.3</lucene.version>
+		<lucene.version>8.4.0</lucene.version>
 		<itextpdf.version>5.5.12</itextpdf.version>
 		<com.google.zxing.version>2.2</com.google.zxing.version>
 		<jsoup.version>1.11.2</jsoup.version>
