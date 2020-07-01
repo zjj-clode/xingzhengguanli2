@@ -44,7 +44,7 @@
 		<poi.version>3.9</poi.version>
 		<!-- <freemarker.version>2.3.23</freemarker.version> -->
 		<freemarker.version>2.3.26-incubating</freemarker.version>
-		<quartz.version>2.2.2</quartz.version>
+		<quartz.version>2.3.2</quartz.version>
 		<httpcomponents.version>4.3.6</httpcomponents.version>
 		<lucene.version>5.5.3</lucene.version>
 		<itextpdf.version>5.5.12</itextpdf.version>
